@@ -17,16 +17,23 @@ const SAMPLE_VALID = `<Card padding="md">
   <Button variant="primary" size="md">Submit</Button>
 </Card>`
 
+// Invalid: wrong enum values and invalid props
 const SAMPLE_INVALID = `<Card padding="xl">
-  <Input label="Name" />
   <Button variant="premium" color="blue">Click</Button>
+</Card>`
+
+// Invalid: disallowed components
+const SAMPLE_INVALID_COMPONENT = `<Card padding="md">
+  <Input label="Username" />
   <CustomComponent />
+  <Button variant="primary">Submit</Button>
 </Card>`
 
 function AiUiDemo() {
   // State for validation testing
   const [tsxInput, setTsxInput] = React.useState(SAMPLE_VALID)
   const [validationResult, setValidationResult] = React.useState<ValidationResult | null>(null)
+  const [copiedToClipboard, setCopiedToClipboard] = React.useState(false)
 
   // Run validation
   const handleValidate = () => {
@@ -43,6 +50,22 @@ function AiUiDemo() {
   const loadInvalid = () => {
     setTsxInput(SAMPLE_INVALID)
     setValidationResult(null)
+  }
+
+  const loadInvalidComponent = () => {
+    setTsxInput(SAMPLE_INVALID_COMPONENT)
+    setValidationResult(null)
+  }
+
+  // Copy violations to clipboard
+  const handleCopyViolations = () => {
+    if (validationResult && !validationResult.ok) {
+      const violationsText = validationResult.violations.join('\n')
+      navigator.clipboard.writeText(violationsText).then(() => {
+        setCopiedToClipboard(true)
+        setTimeout(() => setCopiedToClipboard(false), 2000)
+      })
+    }
   }
 
   // V0.2 demo fix: Simple auto-fix that normalizes Button variant to "primary"
@@ -66,9 +89,36 @@ function AiUiDemo() {
     <div style={{ padding: 24, display: 'grid', gap: 24, maxWidth: 1200, margin: '0 auto' }}>
       <div>
         <h1 style={{ margin: 0, marginBottom: 8 }}>AI + Design System (V0.2)</h1>
-        <p style={{ margin: 0, color: '#6b7280' }}>
+        <p style={{ margin: 0, marginBottom: 16, color: '#6b7280' }}>
           Validate AI-generated JSX against the design system contract
         </p>
+
+        {/* Demo Mode Control Strip */}
+        <div
+          style={{
+            display: 'flex',
+            gap: 8,
+            padding: 12,
+            backgroundColor: '#f9fafb',
+            border: '2px solid #e5e7eb',
+            borderRadius: 8,
+          }}
+        >
+          <div style={{ fontSize: 14, fontWeight: 600, color: '#374151', alignSelf: 'center', marginRight: 8 }}>
+            Demo Mode:
+          </div>
+          <Button variant="danger" size="sm" onClick={loadInvalid}>
+            Load Invalid
+          </Button>
+          <Button variant="primary" size="sm" onClick={handleValidate}>
+            Validate
+          </Button>
+          {validationResult && !validationResult.ok && (
+            <Button variant="danger" size="sm" onClick={handleAutoFix}>
+              Auto-fix
+            </Button>
+          )}
+        </div>
       </div>
 
       {/* Demo: Working Components */}
@@ -89,12 +139,15 @@ function AiUiDemo() {
         <h2 style={{ margin: 0, marginBottom: 16 }}>Validation Tester</h2>
         
         {/* Sample buttons */}
-        <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+        <div style={{ display: 'flex', gap: 8, marginBottom: 12, flexWrap: 'wrap' }}>
           <Button variant="primary" size="sm" onClick={loadValid}>
             Load Valid Sample
           </Button>
           <Button variant="danger" size="sm" onClick={loadInvalid}>
-            Load Invalid Sample
+            Load Invalid (props)
+          </Button>
+          <Button variant="danger" size="sm" onClick={loadInvalidComponent}>
+            Load Invalid (component)
           </Button>
         </div>
 
@@ -158,8 +211,20 @@ function AiUiDemo() {
               </p>
             ) : (
               <div>
-                <div style={{ fontWeight: 600, color: '#991b1b', marginBottom: 8 }}>
-                  Violations:
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                  <div style={{ fontWeight: 600, color: '#991b1b' }}>
+                    Violations:
+                  </div>
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+                    {copiedToClipboard && (
+                      <span style={{ fontSize: 14, color: '#059669', fontWeight: 500 }}>
+                        Copied!
+                      </span>
+                    )}
+                    <Button variant="primary" size="sm" onClick={handleCopyViolations}>
+                      Copy violations
+                    </Button>
+                  </div>
                 </div>
                 <ul style={{ margin: 0, paddingLeft: 20, color: '#7f1d1d' }}>
                   {validationResult.violations.map((violation, idx) => (
