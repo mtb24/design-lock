@@ -1,5 +1,5 @@
 /**
- * AI Output Validation
+ * AI Output Validation (V0.1)
  * Validates that AI-generated JSX conforms to the design system contract
  */
 
@@ -9,7 +9,6 @@ import { tokens } from '../design-system/tokens'
 export interface ValidationResult {
   ok: boolean
   violations: string[]
-  warnings: string[]
 }
 
 const ALLOWED_COMPONENTS = ['Button', 'Card', 'TextInput']
@@ -17,10 +16,10 @@ const ALLOWED_WRAPPER_TAGS = ['div', 'span', 'fragment', 'Fragment']
 
 /**
  * Validates AI-generated JSX output against design system contract
+ * V0.1: Basic string/regex validation for components, props, and enum values
  */
 export function validateOutput(tsx: string): ValidationResult {
   const violations: string[] = []
-  const warnings: string[] = []
 
   // Rule 1: Check for disallowed JSX tags
   const jsxTagPattern = /<(\w+)[\s>\/]/g
@@ -35,38 +34,54 @@ export function validateOutput(tsx: string): ValidationResult {
   for (const tag of foundTags) {
     if (!ALLOWED_COMPONENTS.includes(tag) && !ALLOWED_WRAPPER_TAGS.includes(tag)) {
       violations.push(`Disallowed component: <${tag}> is not in the design system`)
-    } else if (ALLOWED_WRAPPER_TAGS.includes(tag)) {
-      warnings.push(`Wrapper element <${tag}> used - prefer design system components`)
     }
   }
 
-  // Rule 2: Check for disallowed props on each component
+  // Rule 2: Check for disallowed props and validate enum values
   for (const componentName of ALLOWED_COMPONENTS) {
+    // Match component tags including their attributes (handles self-closing tags)
     const componentPattern = new RegExp(
-      `<${componentName}[^>]*>`,
+      `<${componentName}([^>]*)\\\/?>`,
       'g'
     )
     
     let componentMatch
     while ((componentMatch = componentPattern.exec(tsx)) !== null) {
-      const componentTag = componentMatch[0]
+      const attributesStr = componentMatch[1]
       
-      // Extract props from the tag
-      const propPattern = /(\w+)=/g
+      // Extract prop name-value pairs (handles quoted strings)
+      const propPattern = /(\w+)=(?:"([^"]*)"|'([^']*)'|{([^}]*)})/g
       let propMatch
       
-      while ((propMatch = propPattern.exec(componentTag)) !== null) {
+      while ((propMatch = propPattern.exec(attributesStr)) !== null) {
         const propName = propMatch[1]
+        const propValue = propMatch[2] || propMatch[3] || propMatch[4] // "value", 'value', or {value}
         
         // Skip React built-ins
         if (propName === 'key' || propName === 'ref') continue
         
-        const allowedProps = DS_CONTRACT.components[componentName as keyof typeof DS_CONTRACT.components]?.props
+        const componentContract = DS_CONTRACT.components[componentName as keyof typeof DS_CONTRACT.components]
+        const allowedProps = componentContract?.props
         
+        // Check if prop exists in contract
         if (!allowedProps || !(propName in allowedProps)) {
           violations.push(
             `Invalid prop: ${componentName}.${propName} is not defined in contract`
           )
+          continue
+        }
+        
+        // Validate enum values - use type assertion to access properties
+        const propDef = allowedProps[propName as keyof typeof allowedProps] as any
+        if (propDef && propDef.type === 'enum' && Array.isArray(propDef.values)) {
+          // Clean the value (remove quotes and trim)
+          const cleanValue = propValue?.trim()
+          
+          if (cleanValue && !propDef.values.includes(cleanValue)) {
+            violations.push(
+              `Invalid value for ${componentName}.${propName}: "${cleanValue}" (allowed: ${propDef.values.join(', ')})`
+            )
+          }
         }
       }
     }
@@ -94,7 +109,6 @@ export function validateOutput(tsx: string): ValidationResult {
   return {
     ok: violations.length === 0,
     violations,
-    warnings,
   }
 }
 
