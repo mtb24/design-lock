@@ -6,7 +6,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mtb24/ai-design-system-experiment/ai-design-system-experiment.git"
+    "url": "https://github.com/mtb24/ai-design-system-experiment.git"
   },
   "private": true,
   "type": "module",
