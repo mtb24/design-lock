@@ -13,7 +13,7 @@ export const Route = createFileRoute('/ai-ui-demo')({
 
 // Sample TSX outputs for testing validation
 const SAMPLE_VALID = `<Card padding="md">
-  <TextInput label="Email" type="email" required />
+  <TextInput label="Email" required />
   <Button variant="primary" size="md">Submit</Button>
 </Card>`
 
@@ -45,10 +45,27 @@ function AiUiDemo() {
     setValidationResult(null)
   }
 
+  // V0.2 demo fix: Simple auto-fix that normalizes Button variant to "primary"
+  // This is a minimal proof-of-concept for iterative fixing without LLM calls
+  const handleAutoFix = () => {
+    // Fix: Replace any Button variant value with "primary"
+    const fixed = tsxInput.replace(
+      /<Button\s+([^>]*)\bvariant="[^"]*"([^>]*)>/g,
+      '<Button $1variant="primary"$2>'
+    )
+    
+    // Update textarea with fixed content
+    setTsxInput(fixed)
+    
+    // Immediately re-validate to show updated results
+    const result = validateOutput(fixed)
+    setValidationResult(result)
+  }
+
   return (
     <div style={{ padding: 24, display: 'grid', gap: 24, maxWidth: 1200, margin: '0 auto' }}>
       <div>
-        <h1 style={{ margin: 0, marginBottom: 8 }}>AI + Design System (V0.1)</h1>
+        <h1 style={{ margin: 0, marginBottom: 8 }}>AI + Design System (V0.2)</h1>
         <p style={{ margin: 0, color: '#6b7280' }}>
           Validate AI-generated JSX against the design system contract
         </p>
@@ -73,10 +90,10 @@ function AiUiDemo() {
         
         {/* Sample buttons */}
         <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
-          <Button variant="secondary" size="sm" onClick={loadValid}>
+          <Button variant="primary" size="sm" onClick={loadValid}>
             Load Valid Sample
           </Button>
-          <Button variant="secondary" size="sm" onClick={loadInvalid}>
+          <Button variant="danger" size="sm" onClick={loadInvalid}>
             Load Invalid Sample
           </Button>
         </div>
@@ -100,10 +117,17 @@ function AiUiDemo() {
         />
 
         {/* Validate button */}
-        <div style={{ marginTop: 12 }}>
+        <div style={{ marginTop: 12, display: 'flex', gap: 8 }}>
           <Button variant="primary" onClick={handleValidate}>
             Validate Output
           </Button>
+          
+          {/* V0.2 Auto-fix button - only show when validation failed */}
+          {validationResult && !validationResult.ok && (
+            <Button variant="danger" onClick={handleAutoFix}>
+              Auto-fix (V0.2)
+            </Button>
+          )}
         </div>
 
         {/* Results panel */}
