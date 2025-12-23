@@ -20,7 +20,31 @@ export default function Header() {
 
   return (
     <>
-      <header className="p-4 flex items-center bg-gray-800 text-white shadow-lg">
+      <header 
+        className="pl-4 pr-4 flex items-center text-white shadow-lg relative"
+        style={{
+          height: '100px',
+          backgroundColor: 'rgb(0, 0, 0)',
+          overflow: 'visible',
+        }}
+      >
+        {/* Background image wrapper that can overflow */}
+        <div
+          style={{
+            position: 'absolute',
+            top: 0,
+            right: 0,
+            width: '95%',
+            height: '121%',
+            backgroundImage: 'url(/banner2.png)',
+            backgroundSize: '100% 100%',
+            backgroundPosition: 'top right',
+            backgroundRepeat: 'no-repeat',
+            pointerEvents: 'none',
+            zIndex: 0,
+          }}
+        />
+        <div className="relative z-10 flex items-center w-full">
         <button
           onClick={() => setIsOpen(true)}
           className="p-2 hover:bg-gray-700 rounded-lg transition-colors"
@@ -28,15 +52,17 @@ export default function Header() {
         >
           <Menu size={24} />
         </button>
-        <h1 className="ml-4 text-xl font-semibold">
+        {/* <h1 className="ml-4 flex items-center gap-2">
           <Link to="/">
             <img
-              src="/tanstack-word-logo-white.svg"
-              alt="TanStack Logo"
-              className="h-10"
+              src="/logo.png"
+              alt="Kai Design System Logo"
+              className="h-12"
             />
           </Link>
-        </h1>
+          <span className="text-xl font-semibold">Ken's AI Experiments</span>
+         </h1> */}
+        </div>
       </header>
 
       <aside
