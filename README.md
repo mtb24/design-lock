@@ -1,4 +1,4 @@
-# AI Design System Experiment
+# DesignLock
 
 > **Constraining LLM Output to a Design System Contract**
 

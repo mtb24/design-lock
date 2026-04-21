@@ -1,12 +1,12 @@
 {
-  "name": "ai-design-system-experiment",
+  "name": "design-lock",
   "version": "0.0.1",
-  "description": "AI Design System Experiment, constraining AI output to a design system",
+  "description": "AI output governance, constraining AI output to a design system",
   "author": "Ken Downey",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/mtb24/ai-design-system-experiment.git"
+    "url": "https://github.com/mtb24/design-lock.git"
   },
   "private": true,
   "type": "module",
@@ -16,7 +16,9 @@
     "preview": "vite preview",
     "test": "vitest run",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build"
+    "build-storybook": "storybook build",
+    "sync-figma": "tsx src/ai/mcp-sync.ts",
+    "sync-figma:dry-run": "tsx src/ai/mcp-sync.ts --dry-run"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.0.6",
