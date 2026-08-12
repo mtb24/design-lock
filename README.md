@@ -1,78 +1,105 @@
 # DesignLock
 
-> **Constraining LLM Output to a Design System Contract**
+DesignLock is a design-system-agnostic governance layer for AI-generated UI.
+It treats model output as untrusted structured data, validates that data against
+an implementer-selected component contract, applies safety policies, and only
+then hands an accepted tree to the implementer's renderer.
 
-A V0 demo for a YouTube series exploring how to constrain AI-generated UI code to use **only** allowed components, props, and design tokens — moving beyond prompt engineering toward enforceable structure.
+[Try the live Material UI and IBM Carbon comparison](https://kendowney.com/design-lock).
 
----
+## Why this exists
 
-## ❓ Why This Matters
+Prompt instructions can ask a model to use a design system, but they cannot
+enforce the result. DesignLock moves that responsibility into code:
 
-LLMs are good at generating UI code, but poor at respecting long-lived constraints like design systems, component contracts, and tokens.
+- component and prop allowlists are JSON Schemas;
+- arbitrary JSX or JavaScript is never evaluated;
+- unknown style surfaces, event handlers, and unsafe URLs are blocked;
+- response and component-tree size are bounded;
+- strict, lenient, and report behavior are explicit;
+- rendering belongs to an adapter selected by the implementer.
 
-This project explores a simple but powerful idea:
+DesignLock does not ship or prefer a component library. Material UI and Carbon
+are deliberately distinct examples. K2DS, another public library, or a
+proprietary design system can use the same adapter contract.
 
-> **If you define constraints as data and validate against them, AI output becomes governable — not just impressive.**
+## Core usage
 
----
+```ts
+import { evaluateDesignLock, type DesignSystemAdapter } from '@design-lock/core'
 
-## 🎯 Project Goals
+const noticeSchema = {
+  $id: 'https://example.com/schemas/Notice',
+  type: 'object',
+  additionalProperties: false,
+  required: ['component', 'message'],
+  properties: {
+    component: { const: 'Notice' },
+    message: { type: 'string', minLength: 1, maxLength: 200 },
+  },
+} as const
 
-This project demonstrates a pattern for ensuring AI-generated JSX adheres to a predefined design system:
+const adapter: DesignSystemAdapter<string> = {
+  id: 'example',
+  label: 'Example components',
+  registry: { Notice: noticeSchema },
+  schemas: [noticeSchema],
+  render: (tree) => JSON.stringify(tree),
+}
 
-1. **Single Source of Truth**  
-   A design system contract that can be used for:
-   - AI prompting
-   - Output validation
-   - (Future) type generation
+const result = evaluateDesignLock({
+  rawResponse: '{"component":"Notice","message":"Governed UI"}',
+  mode: 'strict',
+  adapter,
+})
+```
 
-2. **Deterministic Components**  
-   UI components that use **design tokens only**, not arbitrary values.
+`result.rendered` is populated only when the selected mode reaches a valid,
+policy-safe tree.
 
-3. **Validation Layer**  
-   Programmatic verification that generated UI code complies with the contract.
+## Modes
 
----
+- `strict`: any schema or policy error blocks rendering.
+- `lenient`: the adapter may deterministically repair or prune the tree;
+  DesignLock revalidates it before rendering.
+- `report`: invalid output is returned for inspection without repair or render.
 
-## 🏗️ Architecture
+## Limits and safety policy
 
-### Design System (`src/design-system/`)
+The default parser rejects responses over 100,000 characters, more than 32 root
+nodes, more than 256 total component nodes, or more than 24 levels of nesting.
+Consumers can inject stricter limits.
 
-- **`tokens.ts`** — Design tokens (colors, spacing, radius, typography)
-- **`contracts.ts`** — Component and prop definitions that constrain what AI can output
-- **`index.ts`** — Barrel exports for clean imports
+The default safety policy rejects inline style/class escape hatches, unbound
+event-handler props, protocol-relative destinations, and URL schemes outside
+HTTP(S), mail, telephone, or relative links. Product integrations should also
+bound provider response bytes and request timeouts before calling DesignLock.
 
-### UI Components (`src/ui/`)
+## Repository structure
 
-All components use token keys for styling. V0 intentionally keeps the surface area small:
+- `src/`: framework- and product-agnostic core.
+- `examples/react-adapters/`: real Material UI and IBM Carbon adapter examples.
+- `ARCHITECTURE.md`: trust boundaries, modes, and extension model.
+- `.github/workflows/quality.yml`: type, test, package, dependency, Fallow, and
+  security gates.
 
-- **`Button.tsx`**
-  - Variants: `primary`, `danger`
-  - Sizes: `sm`, `md`
-
-- **`Card.tsx`**
-  - Container component with configurable padding
-
-- **`TextInput.tsx`**
-  - Labeled form input with optional `required` state
-
-### AI Validation (`src/ai/`)
-
-- **`validate.ts`**
-  - `validateOutput(tsx: string) → { ok, violations }`
-  - Validates:
-    - Allowed components (`Button`, `Card`, `TextInput`)
-    - Allowed props per component
-    - Basic structural correctness (V0 uses string/regex checks)
-
----
-
-## 🚀 Getting Started
+## Local verification
 
 ```bash
-npm install
-npm run dev
+npm ci
+npm run typecheck
+npm test
+npm run build
+npm pack --dry-run
+npm audit --omit=dev
+npm run audit:fallow
+npm run audit:security
+```
 
-## Status
+The package is buildable as ESM with declarations and is ready for controlled
+publication when a package namespace and release policy are selected. No npm
+publication is implied by this repository.
 
-This is a V0 foundation. Validation and AI integration are intentionally not implemented yet.
+## License
+
+MIT © Ken Downey

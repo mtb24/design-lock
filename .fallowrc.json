@@ -1,0 +1,39 @@
+{
+  "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
+  "entry": ["src/index.ts", "examples/react-adapters/adapters.tsx"],
+  "ignorePatterns": ["dist/**"],
+  "ignoreDependencies": ["@design-lock/core", "@emotion/react", "@emotion/styled"],
+  "boundaries": {
+    "zones": [
+      { "name": "core", "patterns": ["src/**"] },
+      { "name": "examples", "patterns": ["examples/**"] }
+    ],
+    "rules": [
+      { "from": "core", "allow": ["core"] },
+      { "from": "examples", "allow": ["examples", "core"] }
+    ]
+  },
+  "duplicates": {
+    "enabled": true,
+    "mode": "mild",
+    "near": true,
+    "minTokens": 60,
+    "minLines": 6,
+    "minOccurrences": 2,
+    "ignore": ["**/*.test.*"],
+    "skipLocal": false,
+    "crossLanguage": false,
+    "ignoreImports": true
+  },
+  "health": {
+    "maxCyclomatic": 20,
+    "maxCognitive": 15,
+    "maxCrap": 200,
+    "maxUnitSize": 80,
+    "ignore": ["**/*.test.*"]
+  },
+  "audit": {
+    "gate": "new-only",
+    "css": false
+  }
+}
