@@ -1,0 +1,39 @@
+name: Quality
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.12.0
+          cache: npm
+      - run: npm ci
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+      - run: npm pack --dry-run
+      - run: npm audit --omit=dev
+      - name: Fallow changed-code and security gates
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        run: |
+          if [ -n "$BASE_REF" ]; then
+            npx --yes fallow@3.15.0 audit --base "origin/$BASE_REF" --summary
+            npx --yes fallow@3.15.0 security --changed-since "origin/$BASE_REF" --gate new --summary
+          else
+            npx --yes fallow@3.15.0 audit --base HEAD^ --summary
+            npx --yes fallow@3.15.0 security --changed-since HEAD^ --gate new --summary
+          fi
