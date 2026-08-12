@@ -49,6 +49,10 @@ renderer, and optional deterministic lenient preparer. DesignLock does not
 prescribe, bundle, or rank component libraries. Selection and adapter ownership
 belong to the implementer.
 
+For clean-checkout typechecking, the repository TypeScript configuration maps
+the example workspace's `@design-lock/core` self-reference to `src/index.ts`.
+Executable adapter tests build and resolve the package's real `dist` export.
+
 ## Defense in depth
 
 Default parsing limits are 100,000 response characters, 32 root nodes, 256 total

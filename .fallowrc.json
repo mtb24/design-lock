@@ -2,7 +2,7 @@
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
   "entry": ["src/index.ts", "examples/react-adapters/adapters.tsx"],
   "ignorePatterns": ["dist/**"],
-  "ignoreDependencies": ["@emotion/react", "@emotion/styled"],
+  "ignoreDependencies": ["@design-lock/core", "@emotion/react", "@emotion/styled"],
   "boundaries": {
     "zones": [
       { "name": "core", "patterns": ["src/**"] },
