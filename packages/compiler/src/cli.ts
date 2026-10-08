@@ -241,7 +241,10 @@ function assertBootstrapBase(base: string) {
 function cleanCandidateRevision(): string {
   const status = spawnSync('git', ['status', '--porcelain'], { cwd: repo, encoding: 'utf8' })
   if (status.status !== 0 || status.stdout.trim()) fail('approval requires a clean, committed candidate')
-  return currentRevision()
+  const head = currentRevision()
+  const declared = process.env.CANDIDATE_COMMIT?.trim()
+  if (declared && declared !== head) fail('CANDIDATE_COMMIT does not match HEAD')
+  return head
 }
 
 async function bootstrapContracts(): Promise<Record<'mui' | 'carbon', ContractArtifact>> {

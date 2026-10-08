@@ -19,7 +19,7 @@ function run(cwd: string, args: string[]) {
   })
 }
 
-function enforce(cwd: string, approval = '') {
+function enforce(cwd: string, approval = '', extraEnv: Record<string, string> = {}) {
   const trusted = git(cwd, ['show', 'origin/main:scripts/enforce-trusted.sh'])
   const entrypoint = trusted.status === 0 ? join(tmpdir(), `designlock-enforce-${process.pid}.sh`) : join(cwd, 'scripts/enforce-trusted.sh')
   if (trusted.status === 0) writeFileSync(entrypoint, trusted.stdout)
@@ -30,6 +30,7 @@ function enforce(cwd: string, approval = '') {
       ...process.env,
       BASE_REF: 'main',
       DESIGN_LOCK_APPROVAL: approval,
+      ...extraEnv,
     },
   })
 }
@@ -81,6 +82,9 @@ describe('approved change lifecycle', () => {
     const accepted = enforce(dir, approvalPath)
     expect(accepted.status, accepted.stdout + accepted.stderr).toBe(0)
     expect(accepted.stdout).toContain('BOOTSTRAP LIMITATION')
+    const mismatchedHead = enforce(dir, approvalPath, { CANDIDATE_COMMIT: 'stale' })
+    expect(mismatchedHead.status).toBe(4)
+    expect(mismatchedHead.stdout + mismatchedHead.stderr).toContain('CANDIDATE_COMMIT does not match HEAD')
     approval.candidateCommit = 'stale'
     writeFileSync(approvalPath, `${JSON.stringify(approval, null, 2)}\n`)
     const stale = enforce(dir, approvalPath)

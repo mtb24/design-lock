@@ -4,5 +4,5 @@
     "mui": "contracts/baselines/mui.json",
     "carbon": "contracts/baselines/carbon.json"
   },
-  "note": "Independent review recorded the MUI and Carbon seed identities and verifier 416bd36523d3048dcef192d0ddf38579aa6abb0aac16aa520b2fbc9bff95f4ec. This file is not the protected approval. Bootstrap still requires exact external review evidence bound to the candidate commit."
+  "note": "Independent review recorded the MUI and Carbon seed identities and verifier 74ab83ccd0e4b5b0bc2597ecdeff676317e7e1b5492b14b8bf9d5745b73509c6. This file is not the protected approval. Bootstrap still requires exact external review evidence bound to the candidate commit."
 }

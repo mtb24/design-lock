@@ -277,8 +277,15 @@ is not this file and is not checked in.
 | Carbon provenance | `0fa1ea7aa4f181c7769f4e65eb19a329a8afa8800440d664b3a56538259f8fb4` |
 | Carbon policyInputHash | `faa8fe56b21d37f572ac3ad9cb39839661bfe436aacadc64da8951a02f6beb9a` |
 | Carbon tokenInputsHash | `0a0eebb1805b9fb61649b98652dcc1d1b367b335e8e6b56f8b0bf0b2db9e0970` |
-| Verifier | `416bd36523d3048dcef192d0ddf38579aa6abb0aac16aa520b2fbc9bff95f4ec` |
+| Verifier at 297ec95 / e5886c0 | `416bd36523d3048dcef192d0ddf38579aa6abb0aac16aa520b2fbc9bff95f4ec` |
 
-`contracts/trust.json` is `reviewed` after that evidence. A follow-up commit
-records this status; the independent reviewer must confirm that exact head
-before the external bootstrap approval is bound to it.
+[Confirm reviewed trust HEAD](8cf4ef00-30dc-43ea-8a74-59878018f4e5) confirmed
+`e5886c06b72ca372f774f3cc1226daf120ea32ed`. Seed identities were unchanged.
+`contracts/trust.json` is `reviewed` and contains no approval JSON.
+
+A follow-up CI correction checks out the pull-request head instead of the merge
+commit and requires `CANDIDATE_COMMIT` to match `HEAD` when set. That changes
+`DECISION_FILES`, so the verifier becomes
+`74ab83ccd0e4b5b0bc2597ecdeff676317e7e1b5492b14b8bf9d5745b73509c6` and the
+independent reviewer must confirm that exact new head before the external
+bootstrap approval is bound.

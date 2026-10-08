@@ -17,6 +17,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # Pull-request jobs otherwise check out the merge commit, which cannot
+          # match an approval bound to the reviewed PR head.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24.12.0
@@ -38,6 +41,7 @@ jobs:
       - name: Trusted baseline enforcement
         env:
           BASE_REF: ${{ github.base_ref || 'main' }}
+          CANDIDATE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
         run: |
           if git cat-file -e "origin/$BASE_REF:scripts/enforce-trusted.sh" 2>/dev/null; then
             trusted_entrypoint="$RUNNER_TEMP/enforce-trusted.sh"
