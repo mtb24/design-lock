@@ -289,3 +289,59 @@ commit and requires `CANDIDATE_COMMIT` to match `HEAD` when set. That changes
 `74ab83ccd0e4b5b0bc2597ecdeff676317e7e1b5492b14b8bf9d5745b73509c6` and the
 independent reviewer must confirm that exact new head before the external
 bootstrap approval is bound.
+
+[Confirm CI-correction HEAD](5154b1c27b1e2cac16969887e64786f0132b4219)
+confirmed `5154b1c`. The external bootstrap approval was bound to that commit,
+the MUI and Carbon review identities, verifier
+`74ab83ccd0e4b5b0bc2597ecdeff676317e7e1b5492b14b8bf9d5745b73509c6`, and the
+reviewed policy and token inputs. The approval lives outside the tree: the
+agent-store file and GitHub Environment secret `DESIGN_LOCK_APPROVAL`.
+
+## Released revisions
+
+| Item | Value |
+| --- | --- |
+| DesignLock PR | https://github.com/mtb24/design-lock/pull/4 |
+| DesignLock PR head | `5154b1c27b1e2cac16969887e64786f0132b4219` |
+| DesignLock merge | `3b49d7a43fd4572797bddb0cbda719c96b700819` |
+| Trust status | `reviewed` |
+| Verifier | `74ab83ccd0e4b5b0bc2597ecdeff676317e7e1b5492b14b8bf9d5745b73509c6` |
+| Reviewer | `cursor-composer-2.5:991bcb4b-25c8-4de3-8fe3-5fc576a9f05e` |
+| kendowney.com snapshot PR | https://github.com/mtb24/kendowney.com/pull/21 |
+| kendowney.com snapshot head | `5ea89fa9589310f9a3774159da0fb808ffa92308` |
+| kendowney.com snapshot merge | `534775694610abb014a9a10c8db7d0684a713ed4` |
+| Website UPSTREAM | `3b49d7a`, `dirty: false`, `remotelyRetrievable: true`, 23 files |
+| Site image lockfile PRs | https://github.com/mtb24/kendowney.com/pull/22 , https://github.com/mtb24/kendowney.com/pull/23 |
+| Deployed kendowney.com main | `8a194a63aaa70a72a52343dd91071d671c811384` |
+| Live `/design-lock` | https://kendowney.com/design-lock |
+
+Protected approval transport is the `design-lock-approval` GitHub Environment
+secret `DESIGN_LOCK_APPROVAL`. Branch protection on DesignLock `main` requires
+the `verify` check. Bootstrap is limited to a missing trusted predecessor plus
+the exact reviewed evidence; unchanged enforcement against reviewed `main`
+exits 0, and an unapproved contract expansion exits 2.
+
+## Deployment
+
+Previous production site container `18b9412d0ad7` was built
+`2026-10-08T23:17:59Z` from the pre-snapshot tree (`e04a543`, no
+`UPSTREAM.json`). Rollback is rsync of that earlier tree, then
+`docker compose build site && docker compose up -d site` only. The VPS `.env`
+was preserved.
+
+The first new image failed because Docker ran `npm install` without
+`package-lock.json`. The lockfile is now copied. `npm ci` then failed on
+Alpine-only optional packages missing from the macOS lockfile, so the image
+uses `npm install --include=dev` with the lockfile present.
+
+Deployed container `e7ab3eacc97a` started `2026-10-08T23:29:14Z`. Live
+verification: home, `/work`, `/honest-fit`, `/resume`, `/contact`, and
+`/design-lock` return 200. All five fixture scenarios match the reviewed
+snapshot (MUI 9.3.1, Carbon 1.113.0, `#7b1fa2`, `#d0e2ff`, upstream
+`3b49d7a`, trust `reviewed`). Rejected, unsupported, upstream, and expansion
+cases do not render. Server logs show no errors. `@design-lock/core` was not
+published to npm.
+
+A live Generate comparison on production attempted DigitalOcean Inference
+because a scoped key is present in the VPS `.env` and returned a provider
+failure. The five fixtures do not use that path.

@@ -302,7 +302,7 @@ used.
 - `src/engine.ts`: parse, validate, policy, repair, revalidate, and render flow.
 - `src/prompt.ts`: optional model instruction builder.
 - `packages/compiler/`: declaration and token extraction. Not a runtime dependency.
-- `contracts/`: policy, generated artifacts, provisional baselines, and fixtures.
+- `contracts/`: policy, generated artifacts, reviewed active baselines, and fixtures.
 - `examples/react-adapters/`: real Material UI and IBM Carbon integrations.
 - `ARCHITECTURE.md`: concise trust boundaries and extension model.
 - `.github/workflows/quality.yml`: type, test, package, dependency, Fallow, and
