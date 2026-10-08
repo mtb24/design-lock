@@ -1,0 +1,10 @@
+{
+  "diagnostics": [
+    "AnyProp.label: any",
+    "OpenBag.meta: open index signature",
+    "UnknownProp.label: unknown",
+    "UnresolvedConditional.value: unresolved conditional",
+    "UnresolvedGeneric.value: unresolved generic"
+  ],
+  "ok": false
+}

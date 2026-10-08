@@ -14,7 +14,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "jsx": "react-jsx",
-    "types": ["node"]
+    "resolveJsonModule": true,
   },
-  "include": ["src/**/*.ts", "examples/**/*.ts", "examples/**/*.tsx", "vitest.config.ts"]
+  "include": ["src/**/*.ts", "examples/**/*.ts", "examples/**/*.tsx", "packages/compiler/src/**/*.ts", "vitest.config.ts"]
 }

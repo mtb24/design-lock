@@ -1,0 +1,331 @@
+{
+  "artifactVersion": 1,
+  "provenance": {
+    "compiler": {
+      "name": "@design-lock/compiler",
+      "optionsHash": "38d54c6640ab1f03ad95e948ce82388c62e8dff6e0d7f30095dcead785f9c529",
+      "typescript": "5.9.3",
+      "version": "0.1.0"
+    },
+    "components": [
+      {
+        "coverage": [
+          {
+            "authority": "excluded",
+            "detail": "303 unselected optional props 11d523794a91",
+            "field": "*unselected"
+          },
+          {
+            "authority": "policy",
+            "detail": "text-only narrowing of a source type that accepts string",
+            "field": "children"
+          },
+          {
+            "authority": "excluded",
+            "detail": "string",
+            "field": "className"
+          },
+          {
+            "authority": "policy",
+            "detail": "narrowed from error|info|inherit|primary|secondary|success|warning",
+            "field": "color"
+          },
+          {
+            "authority": "excluded",
+            "detail": "absent",
+            "field": "component"
+          },
+          {
+            "authority": "derived",
+            "detail": "boolean",
+            "field": "disabled"
+          },
+          {
+            "authority": "policy",
+            "detail": "string",
+            "field": "href"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "onClick"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "ref"
+          },
+          {
+            "authority": "derived",
+            "detail": "source literal union",
+            "field": "size"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "style"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "sx"
+          },
+          {
+            "authority": "derived",
+            "detail": "source literal union",
+            "field": "variant"
+          }
+        ],
+        "declarationHash": "d034452295f892dbd856ef330342fcf22d6aabf49e69240ae6e57578041edcf1",
+        "declarationPath": "@mui/material/Button/Button.d.mts",
+        "exportName": "default",
+        "modelName": "Button",
+        "moduleSpecifier": "@mui/material/Button",
+        "packageName": "@mui/material",
+        "packageVersion": "9.3.1",
+        "rootBinding": "button",
+        "symbolName": "Button"
+      },
+      {
+        "coverage": [
+          {
+            "authority": "excluded",
+            "detail": "284 unselected optional props 809af9500195",
+            "field": "*unselected"
+          },
+          {
+            "authority": "excluded",
+            "detail": "string",
+            "field": "className"
+          },
+          {
+            "authority": "derived",
+            "detail": "source literal union",
+            "field": "color"
+          },
+          {
+            "authority": "excluded",
+            "detail": "absent",
+            "field": "component"
+          },
+          {
+            "authority": "derived",
+            "detail": "boolean",
+            "field": "disabled"
+          },
+          {
+            "authority": "policy",
+            "detail": "text-only narrowing of a source type that accepts string",
+            "field": "label"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "onClick"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "onDelete"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "ref"
+          },
+          {
+            "authority": "derived",
+            "detail": "source literal union",
+            "field": "size"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "style"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "sx"
+          },
+          {
+            "authority": "derived",
+            "detail": "source literal union",
+            "field": "variant"
+          }
+        ],
+        "declarationHash": "24df6ec1c01860bc508c6e57d497e2c188f763ff9225ad6e8ecf2b2925c7293f",
+        "declarationPath": "@mui/material/Chip/Chip.d.mts",
+        "exportName": "default",
+        "modelName": "Chip",
+        "moduleSpecifier": "@mui/material/Chip",
+        "packageName": "@mui/material",
+        "packageVersion": "9.3.1",
+        "rootBinding": "div",
+        "symbolName": "Chip"
+      }
+    ],
+    "policyHash": "bd4f7947e97a24df8cce3a85bf425ce12e78fd45976a5b7c694a1e867ae624e7",
+    "policyId": "designlock.mui",
+    "tokens": [
+      {
+        "contentHash": "d621f6cca92af3a0bd8e0390c234d55d266f33b6a166fde14e2d21ee5c9a4669",
+        "family": "mui.palette",
+        "packageName": "@mui/material",
+        "packageVersion": "9.3.1",
+        "sourcePath": "examples/react-adapters/selected-mui-theme.ts",
+        "theme": "selected-mui-theme",
+        "unresolvedAliases": [],
+        "values": {
+          "error": "#d32f2f",
+          "info": "#0288d1",
+          "primary": "#7b1fa2",
+          "secondary": "#ed6c02",
+          "success": "#2e7d32",
+          "warning": "#ed6c02"
+        }
+      }
+    ]
+  },
+  "provenanceHash": "5fb5c1031f742ba6b3b9d70259d4a4d1877bb9f008789352cf345dee43ed6581",
+  "semantic": {
+    "components": [
+      {
+        "modelName": "Button",
+        "schema": {
+          "$id": "https://design-lock.local/schemas/mui/Button",
+          "additionalProperties": false,
+          "properties": {
+            "children": {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string",
+              "x-design-lock-authority": "policy"
+            },
+            "color": {
+              "enum": [
+                "error",
+                "info",
+                "primary",
+                "secondary",
+                "success",
+                "warning"
+              ],
+              "type": "string",
+              "x-design-lock-authority": "policy",
+              "x-design-lock-role": "token"
+            },
+            "component": {
+              "const": "Button"
+            },
+            "disabled": {
+              "type": "boolean",
+              "x-design-lock-authority": "derived"
+            },
+            "href": {
+              "maxLength": 300,
+              "type": "string",
+              "x-design-lock-authority": "policy"
+            },
+            "size": {
+              "enum": [
+                "large",
+                "medium",
+                "small"
+              ],
+              "type": "string",
+              "x-design-lock-authority": "derived"
+            },
+            "variant": {
+              "enum": [
+                "contained",
+                "outlined",
+                "text"
+              ],
+              "type": "string",
+              "x-design-lock-authority": "derived"
+            }
+          },
+          "required": [
+            "children",
+            "component"
+          ],
+          "type": "object",
+          "x-design-lock-authority": "closed-contract"
+        }
+      },
+      {
+        "modelName": "Chip",
+        "schema": {
+          "$id": "https://design-lock.local/schemas/mui/Chip",
+          "additionalProperties": false,
+          "properties": {
+            "color": {
+              "enum": [
+                "default",
+                "error",
+                "info",
+                "primary",
+                "secondary",
+                "success",
+                "warning"
+              ],
+              "type": "string",
+              "x-design-lock-authority": "derived"
+            },
+            "component": {
+              "const": "Chip"
+            },
+            "disabled": {
+              "type": "boolean",
+              "x-design-lock-authority": "derived"
+            },
+            "label": {
+              "maxLength": 60,
+              "minLength": 1,
+              "type": "string",
+              "x-design-lock-authority": "policy"
+            },
+            "size": {
+              "enum": [
+                "medium",
+                "small"
+              ],
+              "type": "string",
+              "x-design-lock-authority": "derived"
+            },
+            "variant": {
+              "enum": [
+                "filled",
+                "outlined"
+              ],
+              "type": "string",
+              "x-design-lock-authority": "derived"
+            }
+          },
+          "required": [
+            "component",
+            "label"
+          ],
+          "type": "object",
+          "x-design-lock-authority": "closed-contract"
+        }
+      }
+    ],
+    "id": "designlock.mui",
+    "tokenKeys": [
+      {
+        "family": "mui.palette",
+        "keys": [
+          "error",
+          "info",
+          "primary",
+          "secondary",
+          "success",
+          "warning"
+        ]
+      }
+    ]
+  },
+  "semanticHash": "3af483d800a042df74e1dfbb59ac1e63dee0658a9a71e1cbca5f0bdd6dece856"
+}

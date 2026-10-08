@@ -1,0 +1,45 @@
+{
+  "id": "designlock.carbon",
+  "tokens": [{ "family": "carbon.tag.background", "reader": "carbon-tag-background" }],
+  "components": [
+    {
+      "modelName": "Button",
+      "packageName": "@carbon/react",
+      "module": "@carbon/react",
+      "exportName": "Button",
+      "importKind": "named",
+      "props": {
+        "children": { "representation": "text", "required": true, "minLength": 1, "maxLength": 80 },
+        "kind": {},
+        "size": {},
+        "disabled": {},
+        "href": { "maxLength": 300 }
+      },
+      "exclude": ["onClick", "className", "style", "renderIcon", "as"]
+    },
+    {
+      "modelName": "Tag",
+      "packageName": "@carbon/react",
+      "module": "@carbon/react",
+      "exportName": "Tag",
+      "importKind": "named",
+      "branch": {
+        "module": "@carbon/react/lib/components/Tag/Tag.js",
+        "exportName": "TagBaseProps",
+        "importKind": "named",
+        "root": "div"
+      },
+      "props": {
+        "children": { "representation": "text", "required": true, "minLength": 1, "maxLength": 40 },
+        "type": {
+          "select": ["blue", "cyan", "green", "gray", "magenta", "purple", "red", "teal", "cool-gray", "warm-gray"],
+          "tokenFamily": "carbon.tag.background",
+          "tokenKeyPattern": "tagBackground{Pascal}"
+        },
+        "size": {},
+        "disabled": {}
+      },
+      "exclude": ["className", "onClose", "filter", "renderIcon", "decorator"]
+    }
+  ]
+}

@@ -1,6 +1,11 @@
-node_modules/
+node_modules
 dist/
 *.tgz
 .DS_Store
 .env
 coverage/
+.output/
+storybook-static/
+debug-storybook.log
+.designlock-extract.tsx
+.trusted-verifier-*/

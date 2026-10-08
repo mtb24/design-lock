@@ -1,0 +1,13 @@
+{
+  "name": "@design-lock/compiler",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Build-time DesignLock contract extraction. Not part of the browser runtime.",
+  "dependencies": {
+    "@carbon/themes": "11.78.0",
+    "@design-lock/core": "file:../..",
+    "@mui/material": "9.3.1",
+    "typescript": "5.9.3"
+  }
+}

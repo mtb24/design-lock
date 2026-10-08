@@ -1,0 +1,306 @@
+{
+  "artifactVersion": 1,
+  "provenance": {
+    "compiler": {
+      "name": "@design-lock/compiler",
+      "optionsHash": "38d54c6640ab1f03ad95e948ce82388c62e8dff6e0d7f30095dcead785f9c529",
+      "typescript": "5.9.3",
+      "version": "0.1.0"
+    },
+    "components": [
+      {
+        "coverage": [
+          {
+            "authority": "excluded",
+            "detail": "294 unselected optional props 969e9c2bfd84",
+            "field": "*unselected"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "as"
+          },
+          {
+            "authority": "policy",
+            "detail": "text-only narrowing of a source type that accepts string",
+            "field": "children"
+          },
+          {
+            "authority": "excluded",
+            "detail": "string",
+            "field": "className"
+          },
+          {
+            "authority": "derived",
+            "detail": "boolean",
+            "field": "disabled"
+          },
+          {
+            "authority": "policy",
+            "detail": "string",
+            "field": "href"
+          },
+          {
+            "authority": "derived",
+            "detail": "source literal union",
+            "field": "kind"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "onClick"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "renderIcon"
+          },
+          {
+            "authority": "derived",
+            "detail": "source literal union",
+            "field": "size"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "style"
+          }
+        ],
+        "declarationHash": "b1619a016a7dccf09b32c314b1925a1c2786be9ae6f6b930f6dad6a590e6bc76",
+        "declarationPath": "@carbon/react/lib/components/Button/Button.d.ts",
+        "exportName": "Button",
+        "modelName": "Button",
+        "moduleSpecifier": "@carbon/react",
+        "packageName": "@carbon/react",
+        "packageVersion": "1.113.0",
+        "rootBinding": "button",
+        "symbolName": "default"
+      },
+      {
+        "coverage": [
+          {
+            "authority": "excluded",
+            "detail": "3 unselected optional props 843e8823457e",
+            "field": "*unselected"
+          },
+          {
+            "authority": "policy",
+            "detail": "text-only narrowing of a source type that accepts string",
+            "field": "children"
+          },
+          {
+            "authority": "excluded",
+            "detail": "string",
+            "field": "className"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "decorator"
+          },
+          {
+            "authority": "derived",
+            "detail": "boolean",
+            "field": "disabled"
+          },
+          {
+            "authority": "excluded",
+            "detail": "boolean",
+            "field": "filter"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "onClose"
+          },
+          {
+            "authority": "excluded",
+            "detail": "unsupported",
+            "field": "renderIcon"
+          },
+          {
+            "authority": "derived",
+            "detail": "source literal union",
+            "field": "size"
+          },
+          {
+            "authority": "policy",
+            "detail": "narrowed from blue|cool-gray|cyan|gray|green|high-contrast|magenta|outline|purple|red|teal|warm-gray",
+            "field": "type"
+          }
+        ],
+        "declarationHash": "162c40a25db97c48d257f90cf47ebbfe2f154d7adb284ff361f8ea0b9981f5d9",
+        "declarationPath": "@carbon/react/lib/components/Tag/Tag.d.ts",
+        "exportName": "Tag",
+        "modelName": "Tag",
+        "moduleSpecifier": "@carbon/react",
+        "packageName": "@carbon/react",
+        "packageVersion": "1.113.0",
+        "rootBinding": "div",
+        "symbolName": "Tag"
+      }
+    ],
+    "policyHash": "faa8fe56b21d37f572ac3ad9cb39839661bfe436aacadc64da8951a02f6beb9a",
+    "policyId": "designlock.carbon",
+    "tokens": [
+      {
+        "contentHash": "8fb09101e09066c8923c28e090aeb0bb7f3f4768cdf195a03c3e6177384b101d",
+        "family": "carbon.tag.background",
+        "packageName": "@carbon/themes",
+        "packageVersion": "11.78.0",
+        "sourcePath": "@carbon/themes/js/generated/component-tokens/tag.js",
+        "theme": "white",
+        "unresolvedAliases": [],
+        "values": {
+          "tagBackgroundBlue": "#d0e2ff",
+          "tagBackgroundCoolGray": "#dde1e6",
+          "tagBackgroundCyan": "#bae6ff",
+          "tagBackgroundGray": "#e0e0e0",
+          "tagBackgroundGreen": "#a7f0ba",
+          "tagBackgroundMagenta": "#ffd6e8",
+          "tagBackgroundPurple": "#e8daff",
+          "tagBackgroundRed": "#ffd7d9",
+          "tagBackgroundTeal": "#9ef0f0",
+          "tagBackgroundWarmGray": "#e5e0df"
+        }
+      }
+    ]
+  },
+  "provenanceHash": "0fa1ea7aa4f181c7769f4e65eb19a329a8afa8800440d664b3a56538259f8fb4",
+  "semantic": {
+    "components": [
+      {
+        "modelName": "Button",
+        "schema": {
+          "$id": "https://design-lock.local/schemas/carbon/Button",
+          "additionalProperties": false,
+          "properties": {
+            "children": {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string",
+              "x-design-lock-authority": "policy"
+            },
+            "component": {
+              "const": "Button"
+            },
+            "disabled": {
+              "type": "boolean",
+              "x-design-lock-authority": "derived"
+            },
+            "href": {
+              "maxLength": 300,
+              "type": "string",
+              "x-design-lock-authority": "policy"
+            },
+            "kind": {
+              "enum": [
+                "danger",
+                "danger--ghost",
+                "danger--primary",
+                "danger--tertiary",
+                "ghost",
+                "primary",
+                "secondary",
+                "tertiary"
+              ],
+              "type": "string",
+              "x-design-lock-authority": "derived"
+            },
+            "size": {
+              "enum": [
+                "2xl",
+                "lg",
+                "md",
+                "sm",
+                "xl",
+                "xs"
+              ],
+              "type": "string",
+              "x-design-lock-authority": "derived"
+            }
+          },
+          "required": [
+            "children",
+            "component"
+          ],
+          "type": "object",
+          "x-design-lock-authority": "closed-contract"
+        }
+      },
+      {
+        "modelName": "Tag",
+        "schema": {
+          "$id": "https://design-lock.local/schemas/carbon/Tag",
+          "additionalProperties": false,
+          "properties": {
+            "children": {
+              "maxLength": 40,
+              "minLength": 1,
+              "type": "string",
+              "x-design-lock-authority": "policy"
+            },
+            "component": {
+              "const": "Tag"
+            },
+            "disabled": {
+              "type": "boolean",
+              "x-design-lock-authority": "derived"
+            },
+            "size": {
+              "enum": [
+                "lg",
+                "md",
+                "sm"
+              ],
+              "type": "string",
+              "x-design-lock-authority": "derived"
+            },
+            "type": {
+              "enum": [
+                "blue",
+                "cool-gray",
+                "cyan",
+                "gray",
+                "green",
+                "magenta",
+                "purple",
+                "red",
+                "teal",
+                "warm-gray"
+              ],
+              "type": "string",
+              "x-design-lock-authority": "policy",
+              "x-design-lock-role": "token"
+            }
+          },
+          "required": [
+            "children",
+            "component"
+          ],
+          "type": "object",
+          "x-design-lock-authority": "closed-contract"
+        }
+      }
+    ],
+    "id": "designlock.carbon",
+    "tokenKeys": [
+      {
+        "family": "carbon.tag.background",
+        "keys": [
+          "tagBackgroundBlue",
+          "tagBackgroundCoolGray",
+          "tagBackgroundCyan",
+          "tagBackgroundGray",
+          "tagBackgroundGreen",
+          "tagBackgroundMagenta",
+          "tagBackgroundPurple",
+          "tagBackgroundRed",
+          "tagBackgroundTeal",
+          "tagBackgroundWarmGray"
+        ]
+      }
+    ]
+  },
+  "semanticHash": "f33d80c1be151c5e7a50e5188be6952eb03503174d9985dc0a848dc60fb2e7a3"
+}

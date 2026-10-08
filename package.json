@@ -18,7 +18,8 @@
   "private": false,
   "type": "module",
   "workspaces": [
-    "examples/*"
+    "examples/*",
+    "packages/*"
   ],
   "files": [
     "dist",
@@ -40,9 +41,15 @@
     "build": "tsc -p tsconfig.build.json",
     "prepack": "npm run build",
     "typecheck": "tsc --noEmit",
-    "test": "npm run test:core && npm run test:examples",
+    "test": "npm run test:core && npm run test:compiler && npm run contracts:check && npm run test:examples",
     "test:core": "vitest run",
-    "test:examples": "npm run build --silent && node --import tsx --test examples/react-adapters/adapters.test.tsx",
+    "test:compiler": "vitest run --config vitest.compiler.config.ts",
+    "test:examples": "npm run build --silent && node --import tsx --test examples/react-adapters/adapters.test.tsx examples/react-adapters/extracted-dom.test.tsx",
+    "contracts:generate": "tsx packages/compiler/src/cli.ts generate",
+    "contracts:check": "tsx packages/compiler/src/cli.ts check",
+    "contracts:enforce": "tsx packages/compiler/src/cli.ts check --trusted",
+    "contracts:diff": "tsx packages/compiler/src/cli.ts diff",
+    "contracts:evaluate": "tsx packages/compiler/src/cli.ts evaluate",
     "audit:fallow": "npx --yes fallow@3.15.0 audit --base origin/main",
     "audit:security": "npx --yes fallow@3.15.0 security --changed-since origin/main --gate new"
   },
@@ -53,8 +60,12 @@
     "@types/node": "^22.15.3",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
+    "happy-dom": "^20.14.5",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "vitest": "^4.1.10"
+  },
+  "overrides": {
+    "source-map-js": "^1.2.2"
   }
 }

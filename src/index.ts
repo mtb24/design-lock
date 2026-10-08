@@ -1,3 +1,7 @@
+export * from './activation.js'
+export * from './canonical.js'
+export * from './contract-diff.js'
+export * from './contract-types.js'
 export * from './engine.js'
 export * from './parse.js'
 export * from './policies.js'

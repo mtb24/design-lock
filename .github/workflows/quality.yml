@@ -12,10 +12,14 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    environment: design-lock-approval
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          # Pull-request jobs otherwise check out the merge commit, which cannot
+          # match an approval bound to the reviewed PR head.
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v4
         with:
           node-version: 24.12.0
@@ -23,6 +27,30 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
+      - run: npm run contracts:check
+      - name: Materialize protected approval
+        env:
+          APPROVAL_JSON: ${{ secrets.DESIGN_LOCK_APPROVAL }}
+        run: |
+          if [ -n "$APPROVAL_JSON" ]; then
+            approval_path="$RUNNER_TEMP/design-lock-approval.json"
+            umask 077
+            printf '%s' "$APPROVAL_JSON" > "$approval_path"
+            echo "DESIGN_LOCK_APPROVAL=$approval_path" >> "$GITHUB_ENV"
+          fi
+      - name: Trusted baseline enforcement
+        env:
+          BASE_REF: ${{ github.base_ref || 'main' }}
+          CANDIDATE_COMMIT: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          if git cat-file -e "origin/$BASE_REF:scripts/enforce-trusted.sh" 2>/dev/null; then
+            trusted_entrypoint="$RUNNER_TEMP/enforce-trusted.sh"
+            git show "origin/$BASE_REF:scripts/enforce-trusted.sh" > "$trusted_entrypoint"
+            chmod 700 "$trusted_entrypoint"
+            "$trusted_entrypoint"
+          else
+            sh scripts/enforce-trusted.sh
+          fi
       - run: npm run build
       - run: npm pack --dry-run
       - run: npm audit --omit=dev

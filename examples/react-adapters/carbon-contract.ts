@@ -1,3 +1,7 @@
+// Authored compositions. title, body, tags, and actionHref are adapter fields,
+// not props extracted from Carbon Tile.
+const composition = 'adapter-composition'
+
 const carbonTileSchema = {
   $id: 'design-lock/carbon/Tile',
   type: 'object',
@@ -12,6 +16,7 @@ const carbonTileSchema = {
     actionLabel: { type: 'string', maxLength: 60 },
     actionHref: { type: 'string', maxLength: 300 },
   },
+  'x-design-lock-authority': composition,
 } as const
 
 const carbonHeaderSchema = {
@@ -36,6 +41,7 @@ const carbonHeaderSchema = {
       },
     },
   },
+  'x-design-lock-authority': composition,
 } as const
 
 const carbonTagListSchema = {
@@ -57,6 +63,7 @@ const carbonTagListSchema = {
       default: 'blue',
     },
   },
+  'x-design-lock-authority': composition,
 } as const
 
 const carbonNotificationSchema = {
@@ -74,6 +81,7 @@ const carbonNotificationSchema = {
       default: 'info',
     },
   },
+  'x-design-lock-authority': composition,
 } as const
 
 export const carbonComponentRegistry = {

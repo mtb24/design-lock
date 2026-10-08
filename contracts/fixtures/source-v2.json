@@ -1,0 +1,74 @@
+{
+  "artifactVersion": 1,
+  "provenance": {
+    "compiler": {
+      "name": "@design-lock/compiler",
+      "optionsHash": "38d54c6640ab1f03ad95e948ce82388c62e8dff6e0d7f30095dcead785f9c529",
+      "typescript": "5.9.3",
+      "version": "0.1.0"
+    },
+    "components": [
+      {
+        "coverage": [
+          {
+            "authority": "excluded",
+            "detail": "0 unselected optional props e3b0c44298fc",
+            "field": "*unselected"
+          },
+          {
+            "authority": "derived",
+            "detail": "source literal union",
+            "field": "tone"
+          }
+        ],
+        "declarationHash": "34e2c79422ab33745d4d2c00815b77414f341e82dd7d561bd03c534071c77b5b",
+        "declarationPath": "packages/compiler/fixtures/source-v2.ts",
+        "exportName": "Status",
+        "modelName": "Status",
+        "moduleSpecifier": "./packages/compiler/fixtures/source-v2",
+        "packageName": "fixture",
+        "packageVersion": "0",
+        "rootBinding": "unspecified",
+        "symbolName": "Status"
+      }
+    ],
+    "policyHash": "e2a596485f9050eba959ade49f8a19649a8626a1fd8582cf096fd2b849e6a8d4",
+    "policyId": "fixture.source",
+    "tokens": []
+  },
+  "provenanceHash": "a25a559da87888f999a2b9f4ccc0d9b34abc6366e002bf1d3ace041ac86efb1e",
+  "semantic": {
+    "components": [
+      {
+        "modelName": "Status",
+        "schema": {
+          "$id": "https://design-lock.local/schemas/fixture/Status",
+          "additionalProperties": false,
+          "properties": {
+            "component": {
+              "const": "Status"
+            },
+            "tone": {
+              "enum": [
+                "info",
+                "success",
+                "warning"
+              ],
+              "type": "string",
+              "x-design-lock-authority": "derived"
+            }
+          },
+          "required": [
+            "component",
+            "tone"
+          ],
+          "type": "object",
+          "x-design-lock-authority": "closed-contract"
+        }
+      }
+    ],
+    "id": "fixture.source",
+    "tokenKeys": []
+  },
+  "semanticHash": "d863f453fd220e8b6f6af67eb794dc88846888013e5e0fb6758cee4d6ddc1bb6"
+}

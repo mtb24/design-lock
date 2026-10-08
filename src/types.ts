@@ -18,6 +18,7 @@ export type DesignLockIssueCode =
   | 'UNSAFE_STYLE'
   | 'UNBOUND_ACTION'
   | 'UNSAFE_URL'
+  | 'PROTOTYPE_KEY'
 
 export type DesignLockIssue = {
   path: string
@@ -69,6 +70,12 @@ export type DesignLockParseResult = {
   parseError?: string
 }
 
+export type DesignLockRepair = {
+  accepted: boolean
+  validation: DesignLockValidation
+  limitError?: string
+}
+
 export type DesignLockEvaluation<TRendered = unknown> = {
   adapterId: string
   parse: DesignLockParseResult
@@ -77,4 +84,5 @@ export type DesignLockEvaluation<TRendered = unknown> = {
   renderedTree: DesignLockNode | DesignLockNode[] | null
   blocked: boolean
   renderNote?: string
+  repair?: DesignLockRepair
 }

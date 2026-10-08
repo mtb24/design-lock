@@ -1,0 +1,12 @@
+# Trust orchestration and authority-bearing inputs require owner review.
+/.github/workflows/quality.yml @mtb24
+/scripts/enforce-trusted.sh @mtb24
+/src/activation.ts @mtb24
+/src/canonical.ts @mtb24
+/src/contract-diff.ts @mtb24
+/src/contract-types.ts @mtb24
+/packages/compiler/src/ @mtb24
+/contracts/baselines/ @mtb24
+/contracts/generated/ @mtb24
+/contracts/policy/ @mtb24
+/contracts/trust.json @mtb24

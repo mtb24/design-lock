@@ -258,6 +258,41 @@ The repository covers the core evaluator in [`src/engine.test.ts`](src/engine.te
 and exercises real React adapters in
 [`examples/react-adapters/adapters.test.tsx`](examples/react-adapters/adapters.test.tsx).
 
+## Contract extraction
+
+`@design-lock/compiler` is a private build-time package. It reads installed
+TypeScript declarations and existing token sources, then applies an explicit
+policy. Extraction does not authorize a newly discovered prop, enum value, or
+token. The browser runtime in `src/` does not import the compiler, TypeScript,
+React, or a component library.
+
+```bash
+npm run contracts:generate
+npm run contracts:check
+npm run contracts:diff
+```
+
+`contracts:check` is read-only. Generation writes `contracts/generated` and
+does not activate a baseline. `contracts/trust.json` is `reviewed` for the
+independent seed and verifier identities. A matching hash is still not
+approval. The protected bootstrap or successor approval lives outside this
+tree.
+
+Trusted CI uses `scripts/enforce-trusted.sh`. The `design-lock-approval`
+GitHub Environment supplies `DESIGN_LOCK_APPROVAL` as protected JSON; the
+workflow writes it with owner-only permissions under `$RUNNER_TEMP` and never
+prints it. Unchanged active contracts need no matching approval. A changed
+contract must match the old contract, proposed contract, and verifier identities
+in an independently supplied approval.
+
+The one-time bootstrap is narrower: it runs only when the selected base has
+neither trust state nor a verifier. It requires a clean exact commit, reviewed
+trust status, an external approval path, matching MUI and Carbon seed identities,
+the verifier identity, and hashes of the reviewed policy and token inputs. CI
+prints that this is a bootstrap limitation. Once reviewed `main` contains the
+verifier, the bootstrap path is forbidden and ordinary trusted enforcement is
+used.
+
 ## Repository structure
 
 - `src/types.ts`: public node, contract, adapter, mode, and result types.
@@ -266,6 +301,8 @@ and exercises real React adapters in
 - `src/policies.ts`: design-system-independent safety rules.
 - `src/engine.ts`: parse, validate, policy, repair, revalidate, and render flow.
 - `src/prompt.ts`: optional model instruction builder.
+- `packages/compiler/`: declaration and token extraction. Not a runtime dependency.
+- `contracts/`: policy, generated artifacts, provisional baselines, and fixtures.
 - `examples/react-adapters/`: real Material UI and IBM Carbon integrations.
 - `ARCHITECTURE.md`: concise trust boundaries and extension model.
 - `.github/workflows/quality.yml`: type, test, package, dependency, Fallow, and

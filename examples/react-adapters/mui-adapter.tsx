@@ -14,17 +14,11 @@ import {
 } from '@mui/material'
 import type { DesignLockNode, DesignSystemAdapter } from '@design-lock/core'
 import { Fragment, type ComponentProps, type ReactNode } from 'react'
-import { asRecord, isDesignLockNode, prepareAdapterTree, safeAdapterHref } from './adapter-utils'
+import { asRecord, isDesignLockNode, optionalFlag, prepareAdapterTree, safeAdapterHref, schemaEnum, schemaPicks } from './adapter-utils'
 import { designSystemContracts } from './systems'
+import { selectedMuiThemeOptions } from './selected-mui-theme'
 
-const muiTheme = createTheme({
-  palette: {
-    primary: { main: '#7b1fa2' },
-    secondary: { main: '#ed6c02' },
-    background: { default: '#faf7fc', paper: '#ffffff' },
-  },
-  shape: { borderRadius: 14 },
-})
+const muiTheme = createTheme(selectedMuiThemeOptions)
 
 function enumValue<T extends string>(value: unknown, allowed: readonly T[]): T | undefined {
   return typeof value === 'string' && allowed.includes(value as T) ? value as T : undefined
@@ -42,7 +36,7 @@ function renderButton(node: DesignLockNode): ReactNode {
 
 function renderChip(node: DesignLockNode): ReactNode {
   const props = asRecord(node)
-  return <Chip label={String(props.label ?? '')} variant={props.variant as 'filled' | 'outlined' | undefined} color={props.color as 'default' | undefined} size={props.size as 'small' | 'medium' | undefined} />
+  return <Chip label={String(props.label ?? '')} variant={props.variant as 'filled' | 'outlined' | undefined} color={props.color as 'default' | undefined} size={props.size as 'small' | 'medium' | undefined} disabled={Boolean(props.disabled)} />
 }
 
 function renderCardHeader(node: DesignLockNode): ReactNode {
@@ -110,25 +104,25 @@ function prepareTypography(node: DesignLockNode): DesignLockNode {
 
 function prepareButton(node: DesignLockNode): DesignLockNode {
   const props = asRecord(node)
+  const schema = designSystemContracts.mui.registry.Button
+  const disabled = optionalFlag(props.disabled)
   return {
     component: 'Button',
     children: typeof node.children === 'string' ? node.children : '',
-    ...(enumValue(props.variant, ['contained', 'outlined', 'text']) ? { variant: props.variant } : {}),
-    ...(enumValue(props.color, ['primary', 'secondary', 'error', 'warning', 'info', 'success']) ? { color: props.color } : {}),
-    ...(enumValue(props.size, ['small', 'medium', 'large']) ? { size: props.size } : {}),
-    ...(typeof props.disabled === 'boolean' ? { disabled: props.disabled } : {}),
+    ...schemaPicks(props, schema, ['variant', 'color', 'size']),
+    ...(disabled === undefined ? {} : { disabled }),
     ...(safeAdapterHref(props.href) ? { href: props.href.trim() } : {}),
   }
 }
 
 function prepareChip(node: DesignLockNode): DesignLockNode {
   const props = asRecord(node)
+  const disabled = optionalFlag(props.disabled)
   return {
     component: 'Chip',
     label: String(props.label ?? ''),
-    ...(enumValue(props.variant, ['filled', 'outlined']) ? { variant: props.variant } : {}),
-    ...(enumValue(props.color, ['default', 'primary', 'secondary', 'error', 'warning', 'info', 'success']) ? { color: props.color } : {}),
-    ...(enumValue(props.size, ['small', 'medium']) ? { size: props.size } : {}),
+    ...schemaPicks(props, designSystemContracts.mui.registry.Chip, ['variant', 'color', 'size']),
+    ...(disabled === undefined ? {} : { disabled }),
   }
 }
 
