@@ -1,8 +1,8 @@
 {
-  "status": "bootstrap-review-pending",
+  "status": "reviewed",
   "baselines": {
     "mui": "contracts/baselines/mui.json",
     "carbon": "contracts/baselines/carbon.json"
   },
-  "note": "Provisional development baselines copied from the first generated seed. Independent review of the seed contract, verifier, and activation procedure is outstanding. A matching semantic hash is not approval, and this file cannot promote itself to reviewed."
+  "note": "Independent review recorded the MUI and Carbon seed identities and verifier 416bd36523d3048dcef192d0ddf38579aa6abb0aac16aa520b2fbc9bff95f4ec. This file is not the protected approval. Bootstrap still requires exact external review evidence bound to the candidate commit."
 }

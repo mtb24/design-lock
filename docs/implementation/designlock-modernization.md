@@ -249,4 +249,36 @@ Current identities before independent review:
 | Carbon semantic | `f33d80c1be151c5e7a50e5188be6952eb03503174d9985dc0a848dc60fb2e7a3` |
 | Carbon provenance | `0fa1ea7aa4f181c7769f4e65eb19a329a8afa8800440d664b3a56538259f8fb4` |
 | Verifier | `416bd36523d3048dcef192d0ddf38579aa6abb0aac16aa520b2fbc9bff95f4ec` |
-| Trust status | `bootstrap-review-pending` |
+| Trust status | `reviewed` |
+
+## Independent seed review
+
+[Independent seed review](991bcb4b-25c8-4de3-8fe3-5fc576a9f05e) inspected
+`297ec95b96fa325de6a2dbad295a70e79dfb41ca`, recomputed the seed and verifier
+identities, and reproduced cases 1–14. Verdict: `approve-seed`. No blocking
+findings. Two earlier reviewer launches failed on other-model usage limits
+before producing findings.
+
+Reviewer identity: `cursor-composer-2.5:991bcb4b-25c8-4de3-8fe3-5fc576a9f05e`.
+Evidence: independent exact-head review of `297ec95`. The follow-up commit that
+sets `contracts/trust.json` to `reviewed` must be confirmed against the new
+HEAD before the external bootstrap approval is bound. The protected approval
+is not this file and is not checked in.
+
+| Identity | Value |
+| --- | --- |
+| MUI reviewIdentityHash | `61c7c88625368b94d5ab1c6232a71072724a09708a667ea3dd8a2500c9ca9946` |
+| MUI semantic | `3af483d800a042df74e1dfbb59ac1e63dee0658a9a71e1cbca5f0bdd6dece856` |
+| MUI provenance | `5fb5c1031f742ba6b3b9d70259d4a4d1877bb9f008789352cf345dee43ed6581` |
+| MUI policyInputHash | `bd4f7947e97a24df8cce3a85bf425ce12e78fd45976a5b7c694a1e867ae624e7` |
+| MUI tokenInputsHash | `c3917ba3e2934631d6c5297d96f7468388e92a1dd97231c83b5c04eee5f04914` |
+| Carbon reviewIdentityHash | `aab32b63cc73db47a47276944d3d66099e1a73118d63a9f0fbb03a6580c4ff00` |
+| Carbon semantic | `f33d80c1be151c5e7a50e5188be6952eb03503174d9985dc0a848dc60fb2e7a3` |
+| Carbon provenance | `0fa1ea7aa4f181c7769f4e65eb19a329a8afa8800440d664b3a56538259f8fb4` |
+| Carbon policyInputHash | `faa8fe56b21d37f572ac3ad9cb39839661bfe436aacadc64da8951a02f6beb9a` |
+| Carbon tokenInputsHash | `0a0eebb1805b9fb61649b98652dcc1d1b367b335e8e6b56f8b0bf0b2db9e0970` |
+| Verifier | `416bd36523d3048dcef192d0ddf38579aa6abb0aac16aa520b2fbc9bff95f4ec` |
+
+`contracts/trust.json` is `reviewed` after that evidence. A follow-up commit
+records this status; the independent reviewer must confirm that exact head
+before the external bootstrap approval is bound to it.

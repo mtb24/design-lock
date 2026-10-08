@@ -33,13 +33,13 @@ with provenance. Comparing that candidate with a baseline and activating a
 reviewed version are separate steps. The core can diff and assess activation
 without importing the compiler.
 
-The first seed has no trusted predecessor. Until independent review records the
-seed and verifier identities, activation stays pending even when hashes match.
-The bootstrap check therefore binds protected external review evidence to the
-exact candidate commit, both seed identities, the verifier, and policy/token
-inputs. It is allowed only when the selected base has no trust state or
-verifier, and it states that limitation in CI output. After the bootstrap merge,
-the base revision's verifier makes this path unavailable.
+The first seed has no trusted predecessor on `origin/main`. Independent review
+recorded the seed and verifier identities; `contracts/trust.json` is `reviewed`.
+The bootstrap check still binds protected external review evidence to the exact
+candidate commit, both seed identities, the verifier, and policy/token inputs.
+It is allowed only when the selected base has no trust state or verifier, and
+it states that limitation in CI output. After the bootstrap merge, the base
+revision's verifier makes this path unavailable.
 
 Normal trusted enforcement executes the decision implementation materialized
 from the selected base revision. The GitHub workflow obtains approval JSON from

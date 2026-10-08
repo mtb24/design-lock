@@ -273,10 +273,10 @@ npm run contracts:diff
 ```
 
 `contracts:check` is read-only. Generation writes `contracts/generated` and
-does not activate a baseline. The checked-in baselines are provisional
-development fixtures. `contracts/trust.json` stays `bootstrap-review-pending`
-until an independent review records the seed and verifier revisions. A matching
-hash is not approval.
+does not activate a baseline. `contracts/trust.json` is `reviewed` for the
+independent seed and verifier identities. A matching hash is still not
+approval. The protected bootstrap or successor approval lives outside this
+tree.
 
 Trusted CI uses `scripts/enforce-trusted.sh`. The `design-lock-approval`
 GitHub Environment supplies `DESIGN_LOCK_APPROVAL` as protected JSON; the
