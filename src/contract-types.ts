@@ -86,6 +86,7 @@ export type ContractDiff = {
 }
 
 export type ActivationApproval = {
+  candidateCommit: string
   oldReviewIdentity: string
   newReviewIdentity: string
   verifierSourceHash: string

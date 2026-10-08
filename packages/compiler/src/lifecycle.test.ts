@@ -20,7 +20,10 @@ function run(cwd: string, args: string[]) {
 }
 
 function enforce(cwd: string, approval = '') {
-  return spawnSync('sh', ['scripts/enforce-trusted.sh'], {
+  const trusted = git(cwd, ['show', 'origin/main:scripts/enforce-trusted.sh'])
+  const entrypoint = trusted.status === 0 ? join(tmpdir(), `designlock-enforce-${process.pid}.sh`) : join(cwd, 'scripts/enforce-trusted.sh')
+  if (trusted.status === 0) writeFileSync(entrypoint, trusted.stdout)
+  return spawnSync('sh', [entrypoint], {
     cwd,
     encoding: 'utf8',
     env: {
@@ -125,6 +128,15 @@ describe('approved change lifecycle', () => {
     expect(bypass.stdout + bypass.stderr).toContain('active contract')
     writeFileSync(activePath, muiBefore)
 
+    const provenanceTamper = JSON.parse(muiBefore.toString()) as ContractArtifact
+    provenanceTamper.provenance.components[0].declarationHash = 'tampered'
+    provenanceTamper.provenanceHash = 'tampered'
+    writeFileSync(activePath, `${JSON.stringify(provenanceTamper, null, 2)}\n`)
+    const provenanceBypass = enforce(dir)
+    expect(provenanceBypass.status, provenanceBypass.stdout + provenanceBypass.stderr).not.toBe(0)
+    expect(provenanceBypass.stdout + provenanceBypass.stderr).toContain('active contract')
+    writeFileSync(activePath, muiBefore)
+
     const unchanged = run(dir, ['activate', '--contract', 'mui', '--approval', 'contracts/trust.json'])
     expect(unchanged.status).toBe(0)
     expect(unchanged.stdout).toContain('mui: unchanged')
@@ -152,8 +164,11 @@ describe('approved change lifecycle', () => {
     const compiled = await compilePolicy(parsePolicy(JSON.parse(readFileSync(policyPath, 'utf8'))), dir)
     expect(compiled.ok).toBe(true)
     if (!compiled.ok) return
+    expect(git(dir, ['add', '-A']).status).toBe(0)
+    expect(git(dir, ['commit', '-m', 'propose MUI successor']).status).toBe(0)
     const baseline = JSON.parse(muiBefore.toString()) as ContractArtifact
     const approval = {
+      candidateCommit: git(dir, ['rev-parse', 'HEAD']).stdout.trim(),
       oldReviewIdentity: reviewIdentity(baseline),
       newReviewIdentity: reviewIdentity(compiled.artifact),
       verifierSourceHash: decisionHash(dir),
@@ -166,6 +181,10 @@ describe('approved change lifecycle', () => {
     expect(activated.status, activated.stdout + activated.stderr).toBe(0)
     expect(readFileSync(join(dir, 'contracts/baselines/carbon.json')).equals(carbonBefore)).toBe(true)
     expect(readFileSync(join(dir, 'contracts/baselines/mui.json')).equals(muiBefore)).toBe(false)
+    expect(git(dir, ['add', '-A']).status).toBe(0)
+    expect(git(dir, ['commit', '-m', 'activate MUI successor']).status).toBe(0)
+    approval.candidateCommit = git(dir, ['rev-parse', 'HEAD']).stdout.trim()
+    writeFileSync(approvalPath, `${JSON.stringify(approval, null, 2)}\n`)
 
     const enforced = enforce(dir, approvalPath)
     expect(enforced.status, enforced.stdout + enforced.stderr).toBe(0)
@@ -174,25 +193,39 @@ describe('approved change lifecycle', () => {
     expect(accepted.stdout).toContain('active-baseline')
     const currentActive = readFileSync(activePath)
     writeFileSync(activePath, currentActive.toString().replace('#7b1fa2', '#000000'))
+    expect(git(dir, ['add', activePath]).status).toBe(0)
+    expect(git(dir, ['commit', '-m', 'tamper active MUI artifact']).status).toBe(0)
+    approval.candidateCommit = git(dir, ['rev-parse', 'HEAD']).stdout.trim()
+    writeFileSync(approvalPath, `${JSON.stringify(approval, null, 2)}\n`)
     const tamperedActive = enforce(dir, approvalPath)
     expect(tamperedActive.status).not.toBe(0)
     expect(tamperedActive.stdout + tamperedActive.stderr).toContain('active contract')
     writeFileSync(activePath, currentActive)
+    expect(git(dir, ['add', activePath]).status).toBe(0)
+    expect(git(dir, ['commit', '-m', 'restore active MUI artifact']).status).toBe(0)
+    approval.candidateCommit = git(dir, ['rev-parse', 'HEAD']).stdout.trim()
+    writeFileSync(approvalPath, `${JSON.stringify(approval, null, 2)}\n`)
     const muiActivated = readFileSync(join(dir, 'contracts/baselines/mui.json'))
     const carbonPolicy = join(dir, 'contracts/policy/carbon.json')
     writeFileSync(carbonPolicy, readFileSync(carbonPolicy, 'utf8').replace('"maxLength": 80', '"maxLength": 70'))
     const carbonCompiled = await compilePolicy(parsePolicy(JSON.parse(readFileSync(carbonPolicy, 'utf8'))), dir)
     expect(carbonCompiled.ok).toBe(true)
     if (!carbonCompiled.ok) return
+    expect(git(dir, ['add', carbonPolicy]).status).toBe(0)
+    expect(git(dir, ['commit', '-m', 'propose Carbon successor']).status).toBe(0)
     const carbonBaseline = JSON.parse(carbonBefore.toString()) as ContractArtifact
     writeFileSync(approvalPath, `${JSON.stringify({
       ...approval,
+      candidateCommit: git(dir, ['rev-parse', 'HEAD']).stdout.trim(),
       oldReviewIdentity: reviewIdentity(carbonBaseline),
       newReviewIdentity: reviewIdentity(carbonCompiled.artifact),
     }, null, 2)}\n`)
     const carbonActivated = run(dir, ['activate', '--contract', 'carbon', '--approval', approvalPath])
     expect(carbonActivated.status, carbonActivated.stdout + carbonActivated.stderr).toBe(0)
     expect(readFileSync(join(dir, 'contracts/baselines/mui.json')).equals(muiActivated)).toBe(true)
+    expect(git(dir, ['add', '-A']).status).toBe(0)
+    expect(git(dir, ['commit', '-m', 'activate Carbon successor']).status).toBe(0)
+    approval.candidateCommit = git(dir, ['rev-parse', 'HEAD']).stdout.trim()
     writeFileSync(approvalPath, `${JSON.stringify(approval, null, 2)}\n`)
 
     approval.oldReviewIdentity = 'stale'
@@ -200,8 +233,11 @@ describe('approved change lifecycle', () => {
     const staleCheck = enforce(dir, approvalPath)
     expect(staleCheck.status).not.toBe(0)
 
-    const indexPath = join(dir, 'src/index.ts')
-    writeFileSync(indexPath, `${readFileSync(indexPath, 'utf8')}\nexport const tampered = true\n`)
+    const cliPath = join(dir, 'packages/compiler/src/cli.ts')
+    writeFileSync(cliPath, `if (process.argv.includes('--trusted')) process.exit(0)\n${readFileSync(cliPath, 'utf8')}`)
+    expect(git(dir, ['add', cliPath]).status).toBe(0)
+    expect(git(dir, ['commit', '-m', 'attempt candidate CLI bypass']).status).toBe(0)
+    approval.candidateCommit = git(dir, ['rev-parse', 'HEAD']).stdout.trim()
     approval.oldReviewIdentity = reviewIdentity(baseline)
     writeFileSync(approvalPath, `${JSON.stringify(approval, null, 2)}\n`)
     const altered = enforce(dir, approvalPath)

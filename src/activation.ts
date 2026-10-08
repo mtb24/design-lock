@@ -3,18 +3,7 @@ import { diffContracts } from './contract-diff.js'
 import type { ActivationApproval, ActivationDecision, ContractArtifact, TrustStatus } from './contract-types.js'
 
 export function reviewIdentity(artifact: ContractArtifact): string {
-  return canonicalJson({
-    semantic: artifact.semantic,
-    policyId: artifact.provenance.policyId,
-    policyHash: artifact.provenance.policyHash,
-    tokens: artifact.provenance.tokens.map((token) => ({
-      family: token.family,
-      sourcePath: token.sourcePath,
-      theme: token.theme,
-      values: token.values,
-      unresolvedAliases: token.unresolvedAliases,
-    })),
-  })
+  return canonicalJson(artifact)
 }
 
 const SELF_REVIEWERS = new Set(['self', 'generator', 'compiler', 'candidate', 'bootstrap'])
@@ -30,6 +19,7 @@ export function assessActivation(input: {
   baseline: ContractArtifact
   candidate: ContractArtifact
   approval: ActivationApproval | null
+  candidateCommit: string
   verifierSourceHash: string
   trustStatus: TrustStatus
 }): ActivationDecision {
@@ -51,6 +41,9 @@ export function assessActivation(input: {
   if (!approval) return decision(false, 'Review is required before activation')
   if (SELF_REVIEWERS.has(approval.reviewer.trim().toLowerCase())) {
     return decision(false, 'Self-approval is rejected')
+  }
+  if (approval.candidateCommit !== input.candidateCommit) {
+    return decision(false, 'Stale approval: candidate commit does not match the reviewed revision')
   }
   if (approval.oldReviewIdentity !== reviewIdentity(input.baseline)) {
     return decision(false, 'Stale approval: old review identity does not match the trusted baseline')

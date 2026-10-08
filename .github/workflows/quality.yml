@@ -38,7 +38,15 @@ jobs:
       - name: Trusted baseline enforcement
         env:
           BASE_REF: ${{ github.base_ref || 'main' }}
-        run: sh scripts/enforce-trusted.sh
+        run: |
+          if git cat-file -e "origin/$BASE_REF:scripts/enforce-trusted.sh" 2>/dev/null; then
+            trusted_entrypoint="$RUNNER_TEMP/enforce-trusted.sh"
+            git show "origin/$BASE_REF:scripts/enforce-trusted.sh" > "$trusted_entrypoint"
+            chmod 700 "$trusted_entrypoint"
+            "$trusted_entrypoint"
+          else
+            sh scripts/enforce-trusted.sh
+          fi
       - run: npm run build
       - run: npm pack --dry-run
       - run: npm audit --omit=dev

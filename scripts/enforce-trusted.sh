@@ -14,7 +14,19 @@ if ! git cat-file -e "origin/${base_ref}:packages/compiler/src/verifier.ts" 2>/d
   fi
   exec npx tsx packages/compiler/src/cli.ts bootstrap-review --base "origin/${base_ref}" --approval "$approval"
 fi
+
+# Once a reviewed predecessor exists, candidate orchestration is not trusted.
+# Execute the compiler and verifier from the selected base while they inspect
+# the candidate working tree and active artifacts.
+trusted_root="$(mktemp -d "${RUNNER_TEMP:-${TMPDIR:-/tmp}}/designlock-trusted.XXXXXX")"
+trap 'rm -rf "$trusted_root"' EXIT HUP INT TERM
+git archive "origin/${base_ref}" | tar -x -C "$trusted_root"
+rm -rf "$trusted_root/node_modules"
+ln -s "$PWD/node_modules" "$trusted_root/node_modules"
+trusted_cli="$trusted_root/packages/compiler/src/cli.ts"
+tsx="$PWD/node_modules/.bin/tsx"
 if [ -n "$approval" ]; then
-  exec npx tsx packages/compiler/src/cli.ts check --trusted --base "origin/${base_ref}" --approval "$approval"
+  "$tsx" --tsconfig "$trusted_root/tsconfig.json" "$trusted_cli" check --trusted --base "origin/${base_ref}" --approval "$approval"
+  exit $?
 fi
-exec npx tsx packages/compiler/src/cli.ts check --trusted --base "origin/${base_ref}"
+"$tsx" --tsconfig "$trusted_root/tsconfig.json" "$trusted_cli" check --trusted --base "origin/${base_ref}"

@@ -55,6 +55,12 @@ function flag(name: string): string | undefined {
   return index >= 0 ? args[index + 1] : undefined
 }
 
+function currentRevision(): string {
+  const revision = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: repo, encoding: 'utf8' })
+  if (revision.status !== 0) fail('could not resolve the candidate commit')
+  return revision.stdout.trim()
+}
+
 type TrustFile = {
   status: TrustStatus
   baselines: Record<string, string>
@@ -92,6 +98,7 @@ function trustedDecision(base: string, input: {
   baseline: ContractArtifact
   candidate: ContractArtifact
   approval: ActivationApproval | null
+  candidateCommit: string
   trustStatus: TrustStatus
 }): { activated: boolean; classification: string; reason: string; altered: boolean } {
   const dir = materializeTrusted(base)
@@ -124,7 +131,12 @@ function runtimeTrust(base: string | undefined, trusted: boolean): TrustFile {
     console.error(`trusted base ${base} has no contracts/trust.json`)
     process.exit(4)
   }
-  return JSON.parse(text) as TrustFile
+  const selected = JSON.parse(text) as TrustFile
+  if (canonicalJson(selected) !== canonicalJson(trustFile())) {
+    console.error('candidate trust configuration differs from the selected trusted base')
+    process.exit(4)
+  }
+  return selected
 }
 
 function activeMatches(policyName: string, baseline: ContractArtifact, candidate: ContractArtifact, approved: boolean): boolean {
@@ -177,9 +189,10 @@ function finishComparison(
   base: string | undefined,
 ): number {
   const approval = approvalFor(approvalFile(), name)
+  const candidateCommit = approval ? cleanCandidateRevision() : currentRevision()
   const decided = base
-    ? trustedDecision(base, { baseline, candidate: artifact, approval, trustStatus: trust.status })
-    : assessActivation({ baseline, candidate: artifact, approval, verifierSourceHash: verifier, trustStatus: trust.status })
+    ? trustedDecision(base, { baseline, candidate: artifact, approval, candidateCommit, trustStatus: trust.status })
+    : assessActivation({ baseline, candidate: artifact, approval, candidateCommit, verifierSourceHash: verifier, trustStatus: trust.status })
   const classification = 'diff' in decided ? decided.diff.classification : decided.classification
   if ('altered' in decided && decided.altered) {
     console.error(`${name}: ${decided.reason}`)
@@ -227,10 +240,8 @@ function assertBootstrapBase(base: string) {
 
 function cleanCandidateRevision(): string {
   const status = spawnSync('git', ['status', '--porcelain'], { cwd: repo, encoding: 'utf8' })
-  if (status.status !== 0 || status.stdout.trim()) fail('bootstrap-review requires a clean, committed candidate')
-  const revision = spawnSync('git', ['rev-parse', 'HEAD'], { cwd: repo, encoding: 'utf8' })
-  if (revision.status !== 0) fail('bootstrap-review could not resolve the candidate commit')
-  return revision.stdout.trim()
+  if (status.status !== 0 || status.stdout.trim()) fail('approval requires a clean, committed candidate')
+  return currentRevision()
 }
 
 async function bootstrapContracts(): Promise<Record<'mui' | 'carbon', ContractArtifact>> {
@@ -364,6 +375,7 @@ async function activate() {
       baseline,
       candidate: artifact,
       approval: approvalFor(approval, policy.name),
+      candidateCommit: cleanCandidateRevision(),
       verifierSourceHash: verifier,
       trustStatus: trust.status,
     })

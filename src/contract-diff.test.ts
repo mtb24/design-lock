@@ -64,6 +64,7 @@ describe('contract diff and activation', () => {
       baseline,
       candidate,
       approval: null,
+      candidateCommit: 'candidate',
       verifierSourceHash: 'verifier',
       trustStatus: 'reviewed',
     })
@@ -147,6 +148,7 @@ describe('contract diff and activation', () => {
       schema: { ...baseSchema, properties: { ...baseSchema.properties, tone: { enum: ['info', 'success'] } } },
     })
     const approval = {
+      candidateCommit: 'candidate',
       oldReviewIdentity: reviewIdentity(baseline),
       newReviewIdentity: reviewIdentity(candidate),
       verifierSourceHash: 'verifier',
@@ -154,13 +156,14 @@ describe('contract diff and activation', () => {
       evidence: 'review-record',
     }
     expect(
-      assessActivation({ baseline, candidate, approval, verifierSourceHash: 'verifier', trustStatus: 'bootstrap-review-pending' }).activated,
+      assessActivation({ baseline, candidate, approval, candidateCommit: 'candidate', verifierSourceHash: 'verifier', trustStatus: 'bootstrap-review-pending' }).activated,
     ).toBe(false)
     expect(
       assessActivation({
         baseline,
         candidate,
         approval: { ...approval, newReviewIdentity: 'stale' },
+        candidateCommit: 'candidate',
         verifierSourceHash: 'verifier',
         trustStatus: 'reviewed',
       }).reason,
@@ -170,6 +173,7 @@ describe('contract diff and activation', () => {
         baseline,
         candidate,
         approval: { ...approval, verifierSourceHash: 'other-verifier' },
+        candidateCommit: 'candidate',
         verifierSourceHash: 'verifier',
         trustStatus: 'reviewed',
       }).activated,
@@ -179,16 +183,17 @@ describe('contract diff and activation', () => {
         baseline,
         candidate,
         approval: { ...approval, reviewer: 'compiler' },
+        candidateCommit: 'candidate',
         verifierSourceHash: 'verifier',
         trustStatus: 'reviewed',
       }).activated,
     ).toBe(false)
     const flagged = artifact({ semanticHash: 'new', schema: candidate.semantic.components[0].schema, approved: true })
     expect(
-      assessActivation({ baseline, candidate: flagged, approval, verifierSourceHash: 'verifier', trustStatus: 'reviewed' }).activated,
+      assessActivation({ baseline, candidate: flagged, approval, candidateCommit: 'candidate', verifierSourceHash: 'verifier', trustStatus: 'reviewed' }).activated,
     ).toBe(false)
     expect(
-      assessActivation({ baseline, candidate, approval, verifierSourceHash: 'verifier', trustStatus: 'reviewed' }).activated,
+      assessActivation({ baseline, candidate, approval, candidateCommit: 'candidate', verifierSourceHash: 'verifier', trustStatus: 'reviewed' }).activated,
     ).toBe(true)
     const recolored = artifact({
       semanticHash: 'same',
@@ -221,6 +226,7 @@ describe('contract diff and activation', () => {
         baseline: painted,
         candidate: recolored,
         approval: tokenApproval,
+        candidateCommit: 'candidate',
         verifierSourceHash: 'verifier',
         trustStatus: 'reviewed',
       }).activated,

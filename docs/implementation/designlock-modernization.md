@@ -214,3 +214,39 @@ The current candidate remains `bootstrap-review-pending` until the independent
 exact-head review described in the release request completes. Repository
 environment configuration, protected secret installation, and branch
 protection are performed only after that evidence exists.
+
+## Release freeze
+
+The candidate now binds `reviewIdentity` to the entire artifact, requires
+approvals to name the exact candidate commit, and executes check/bootstrap
+through `scripts/enforce-trusted.sh`. After a trusted predecessor exists, that
+script materializes `origin/$BASE_REF` under `$RUNNER_TEMP` and runs that
+revision's CLI so a candidate-edited `packages/compiler/src/cli.ts` cannot
+self-authorize. The workflow copies the base entrypoint when present; the
+bootstrap PR still uses the candidate script because `origin/main` has no
+verifier. `DECISION_FILES` includes CODEOWNERS, the quality workflow, and the
+enforcement script. `.gitignore` matches `node_modules` as a name rather than
+only as a directory so a lifecycle-test symlink is not committed and then
+extracted into the trusted tree.
+
+Freeze checks on the dirty candidate:
+
+| Command | Exit |
+| --- | --- |
+| `npx tsc --noEmit` | 0 |
+| `npm test` | 0. Core 15, compiler 16 including bootstrap and lifecycle, both contracts fresh against provisional baselines, example DOM tests 7 |
+| `npm run build` and `npm pack --dry-run` | 0. Pack contains core `dist` only |
+| `npm audit --omit=dev` | 0 |
+| Fallow audit and `fallow security --gate new --changed-since origin/main` | 0 |
+| `git diff --check` | 0 |
+
+Current identities before independent review:
+
+| Identity | Value |
+| --- | --- |
+| MUI semantic | `3af483d800a042df74e1dfbb59ac1e63dee0658a9a71e1cbca5f0bdd6dece856` |
+| MUI provenance | `5fb5c1031f742ba6b3b9d70259d4a4d1877bb9f008789352cf345dee43ed6581` |
+| Carbon semantic | `f33d80c1be151c5e7a50e5188be6952eb03503174d9985dc0a848dc60fb2e7a3` |
+| Carbon provenance | `0fa1ea7aa4f181c7769f4e65eb19a329a8afa8800440d664b3a56538259f8fb4` |
+| Verifier | `416bd36523d3048dcef192d0ddf38579aa6abb0aac16aa520b2fbc9bff95f4ec` |
+| Trust status | `bootstrap-review-pending` |
