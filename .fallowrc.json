@@ -1,15 +1,25 @@
 {
   "$schema": "https://raw.githubusercontent.com/fallow-rs/fallow/main/schema.json",
-  "entry": ["src/index.ts", "examples/react-adapters/adapters.tsx"],
-  "ignorePatterns": ["dist/**"],
-  "ignoreDependencies": ["@design-lock/core", "@emotion/react", "@emotion/styled"],
+  "entry": [
+    "src/index.ts",
+    "src/contract-diff.test.ts",
+    "packages/compiler/src/cli.ts",
+    "packages/compiler/src/compile.test.ts",
+    "packages/compiler/src/lifecycle.test.ts",
+    "examples/react-adapters/adapters.tsx",
+    "examples/react-adapters/extracted-dom.test.tsx"
+  ],
+  "ignorePatterns": ["dist/**", "contracts/generated/**", "contracts/baselines/**", "storybook-static/**", ".output/**"],
+  "ignoreDependencies": ["@design-lock/core", "@emotion/react", "@emotion/styled", "happy-dom"],
   "boundaries": {
     "zones": [
       { "name": "core", "patterns": ["src/**"] },
+      { "name": "compiler", "patterns": ["packages/compiler/**"] },
       { "name": "examples", "patterns": ["examples/**"] }
     ],
     "rules": [
       { "from": "core", "allow": ["core"] },
+      { "from": "compiler", "allow": ["compiler", "core"] },
       { "from": "examples", "allow": ["examples", "core"] }
     ]
   },

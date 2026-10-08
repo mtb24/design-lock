@@ -2,6 +2,32 @@ import type { DesignLockNode } from '@design-lock/core'
 
 export type NodePreparer = (node: DesignLockNode) => DesignLockNode | null
 
+export function schemaEnum(schema: object, prop: string): readonly string[] {
+  const properties = (schema as { properties?: Record<string, { enum?: readonly string[] }> }).properties
+  return properties?.[prop]?.enum ?? []
+}
+
+function enumValue(value: unknown, allowed: readonly string[]): string | undefined {
+  return typeof value === 'string' && allowed.includes(value) ? value : undefined
+}
+
+export function schemaPicks(
+  props: Record<string, unknown>,
+  schema: object,
+  keys: readonly string[],
+): Record<string, string> {
+  const picked: Record<string, string> = {}
+  for (const key of keys) {
+    const value = enumValue(props[key], schemaEnum(schema, key))
+    if (value) picked[key] = value
+  }
+  return picked
+}
+
+export function optionalFlag(value: unknown): boolean | undefined {
+  return typeof value === 'boolean' ? value : undefined
+}
+
 export function asRecord(node: DesignLockNode): Record<string, unknown> {
   return node as Record<string, unknown>
 }

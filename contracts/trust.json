@@ -1,0 +1,8 @@
+{
+  "status": "bootstrap-review-pending",
+  "baselines": {
+    "mui": "contracts/baselines/mui.json",
+    "carbon": "contracts/baselines/carbon.json"
+  },
+  "note": "Provisional development baselines copied from the first generated seed. Independent review of the seed contract, verifier, and activation procedure is outstanding. A matching semantic hash is not approval, and this file cannot promote itself to reviewed."
+}

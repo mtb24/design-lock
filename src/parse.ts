@@ -48,6 +48,24 @@ function treeLimitError(
   return null
 }
 
+export function designLockTreeLimitError(
+  tree: DesignLockNode | DesignLockNode[],
+  limits: DesignLockLimits = DEFAULT_DESIGN_LOCK_LIMITS,
+): string | null {
+  return inspectTree(tree, limits)
+}
+
+const PROTOTYPE_KEYS = new Set(['__proto__', 'constructor', 'prototype'])
+
+function parseJson(candidate: string): unknown {
+  return JSON.parse(candidate, (key, value: unknown) => {
+    if (PROTOTYPE_KEYS.has(key)) {
+      throw new Error(`Prototype-shaped key "${key}" is not allowed`)
+    }
+    return value
+  })
+}
+
 function inspectTree(
   tree: DesignLockNode | DesignLockNode[],
   limits: DesignLockLimits,
@@ -117,7 +135,7 @@ export function parseDesignLockResponse(
   const candidate = extractBalancedJson(unfenced) ?? unfenced
   let parsed: unknown
   try {
-    parsed = JSON.parse(candidate)
+    parsed = parseJson(candidate)
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error)
     return { tree: null, parseError: `Invalid JSON: ${message}` }

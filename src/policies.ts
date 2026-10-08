@@ -12,6 +12,24 @@ function isUnsafeUrl(value: string): boolean {
   return scheme !== undefined && !['https', 'http', 'mailto', 'tel'].includes(scheme)
 }
 
+const PROTOTYPE_KEYS = new Set(['__proto__', 'constructor', 'prototype'])
+
+function prototypeIssue(path: string, component: string, key: string): DesignLockIssue {
+  return {
+    path: `${path}.${key}`,
+    component,
+    code: 'PROTOTYPE_KEY',
+    message: `Prototype-shaped key "${key}" is not allowed`,
+    received: key,
+  }
+}
+
+function hasUnsafePrototype(value: object): boolean {
+  if (Array.isArray(value)) return false
+  const proto = Object.getPrototypeOf(value) as object | null
+  return proto !== Object.prototype && proto !== null
+}
+
 function isUrlProperty(key: string): boolean {
   const normalized = key.toLowerCase()
   return normalized === 'href' || normalized === 'src' || normalized.endsWith('href') || normalized.endsWith('url')
@@ -30,9 +48,25 @@ export function evaluateDefaultSafetyPolicy(
       return
     }
     if (typeof value !== 'object' || value === null) return
+    if (hasUnsafePrototype(value)) {
+      errors.push({
+        path,
+        component,
+        code: 'PROTOTYPE_KEY',
+        message: 'Object prototype is not Object.prototype',
+      })
+      return
+    }
     const record = value as Record<string, unknown>
     const owner = typeof record.component === 'string' ? record.component : component
-    Object.entries(record).forEach(([key, child]) => {
+    Reflect.ownKeys(record).forEach((property) => {
+      if (typeof property !== 'string') return
+      const key = property
+      const child = record[key]
+      if (PROTOTYPE_KEYS.has(key)) {
+        errors.push(prototypeIssue(path, owner, key))
+        return
+      }
       const childPath = `${path}.${key}`
       if ((key === 'className' || key === 'style') && child != null) {
         errors.push({

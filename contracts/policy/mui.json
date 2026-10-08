@@ -1,0 +1,40 @@
+{
+  "id": "designlock.mui",
+  "tokens": [{ "family": "mui.palette", "reader": "mui-palette", "source": "examples/react-adapters/selected-mui-theme.ts" }],
+  "components": [
+    {
+      "modelName": "Button",
+      "packageName": "@mui/material",
+      "module": "@mui/material/Button",
+      "exportName": "default",
+      "importKind": "default",
+      "props": {
+        "children": { "representation": "text", "required": true, "minLength": 1, "maxLength": 80 },
+        "variant": {},
+        "color": {
+          "select": ["primary", "secondary", "error", "warning", "info", "success"],
+          "tokenFamily": "mui.palette"
+        },
+        "size": {},
+        "disabled": {},
+        "href": { "maxLength": 300 }
+      },
+      "exclude": ["onClick", "className", "style", "sx", "ref", "component"]
+    },
+    {
+      "modelName": "Chip",
+      "packageName": "@mui/material",
+      "module": "@mui/material/Chip",
+      "exportName": "default",
+      "importKind": "default",
+      "props": {
+        "label": { "representation": "text", "required": true, "minLength": 1, "maxLength": 60 },
+        "variant": {},
+        "color": {},
+        "size": {},
+        "disabled": {}
+      },
+      "exclude": ["onClick", "onDelete", "className", "style", "sx", "ref", "component"]
+    }
+  ]
+}

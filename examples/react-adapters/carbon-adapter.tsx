@@ -11,7 +11,7 @@ import {
 } from '@carbon/react'
 import type { DesignLockNode, DesignSystemAdapter } from '@design-lock/core'
 import { Fragment, type ReactNode } from 'react'
-import { asRecord, prepareAdapterTree, safeAdapterHref } from './adapter-utils'
+import { asRecord, optionalFlag, prepareAdapterTree, safeAdapterHref, schemaEnum, schemaPicks } from './adapter-utils'
 import { designSystemContracts } from './systems'
 
 function strings(value: unknown): string[] {
@@ -60,11 +60,46 @@ function renderNotification(node: DesignLockNode): ReactNode {
   return <div className="bg-white p-5"><InlineNotification hideCloseButton kind={(props.kind as 'info') ?? 'info'} title={String(props.title ?? '')} subtitle={String(props.subtitle ?? '')} /></div>
 }
 
+function renderButton(node: DesignLockNode): ReactNode {
+  const props = asRecord(node)
+  const schema = designSystemContracts.carbon.registry.Button
+  return (
+    <Button
+      kind={(enumValue(props.kind, schemaEnum(schema, 'kind')) as 'primary') ?? 'primary'}
+      size={enumValue(props.size, schemaEnum(schema, 'size')) as 'md' | undefined}
+      disabled={Boolean(props.disabled)}
+      href={typeof props.href === 'string' ? props.href : undefined}
+    >
+      {typeof node.children === 'string' ? node.children : null}
+    </Button>
+  )
+}
+
+function renderTag(node: DesignLockNode): ReactNode {
+  const props = asRecord(node)
+  const schema = designSystemContracts.carbon.registry.Tag
+  return (
+    <Tag
+      type={(enumValue(props.type, schemaEnum(schema, 'type')) as 'blue') ?? 'blue'}
+      size={enumValue(props.size, schemaEnum(schema, 'size')) as 'md' | undefined}
+      disabled={Boolean(props.disabled)}
+    >
+      {typeof node.children === 'string' ? node.children : null}
+    </Tag>
+  )
+}
+
+function enumValue<T extends string>(value: unknown, allowed: readonly T[]): T | undefined {
+  return typeof value === 'string' && allowed.includes(value as T) ? (value as T) : undefined
+}
+
 const renderers: Record<string, (node: DesignLockNode) => ReactNode> = {
   Tile: renderTile,
   Header: renderHeader,
   TagList: renderTagList,
   InlineNotification: renderNotification,
+  Button: renderButton,
+  Tag: renderTag,
 }
 
 function renderNode(node: DesignLockNode): ReactNode {
@@ -115,11 +150,36 @@ function prepareNotification(node: DesignLockNode): DesignLockNode {
   return { component: 'InlineNotification', title: String(props.title ?? ''), subtitle: String(props.subtitle ?? ''), ...kind }
 }
 
+function prepareButton(node: DesignLockNode): DesignLockNode {
+  const props = asRecord(node)
+  const disabled = optionalFlag(props.disabled)
+  return {
+    component: 'Button',
+    children: typeof node.children === 'string' ? node.children : '',
+    ...schemaPicks(props, designSystemContracts.carbon.registry.Button, ['kind', 'size']),
+    ...(disabled === undefined ? {} : { disabled }),
+    ...(safeAdapterHref(props.href) ? { href: props.href.trim() } : {}),
+  }
+}
+
+function prepareTag(node: DesignLockNode): DesignLockNode {
+  const props = asRecord(node)
+  const disabled = optionalFlag(props.disabled)
+  return {
+    component: 'Tag',
+    children: typeof node.children === 'string' ? node.children : '',
+    ...schemaPicks(props, designSystemContracts.carbon.registry.Tag, ['type', 'size']),
+    ...(disabled === undefined ? {} : { disabled }),
+  }
+}
+
 const preparers: Record<string, (node: DesignLockNode) => DesignLockNode> = {
   Tile: prepareTile,
   Header: prepareHeader,
   TagList: prepareTagList,
   InlineNotification: prepareNotification,
+  Button: prepareButton,
+  Tag: prepareTag,
 }
 
 function prepareNode(node: DesignLockNode): DesignLockNode | null {

@@ -1,0 +1,73 @@
+{
+  "artifactVersion": 1,
+  "provenance": {
+    "compiler": {
+      "name": "@design-lock/compiler",
+      "optionsHash": "38d54c6640ab1f03ad95e948ce82388c62e8dff6e0d7f30095dcead785f9c529",
+      "typescript": "5.9.3",
+      "version": "0.1.0"
+    },
+    "components": [
+      {
+        "coverage": [
+          {
+            "authority": "excluded",
+            "detail": "0 unselected optional props e3b0c44298fc",
+            "field": "*unselected"
+          },
+          {
+            "authority": "derived",
+            "detail": "source literal union",
+            "field": "tone"
+          }
+        ],
+        "declarationHash": "e3dbb7d16395c139eabab0e10817a8c6a88370afd1f146bebd571c6cdcb40ea0",
+        "declarationPath": "packages/compiler/fixtures/source-v1.ts",
+        "exportName": "Status",
+        "modelName": "Status",
+        "moduleSpecifier": "./packages/compiler/fixtures/source-v1",
+        "packageName": "fixture",
+        "packageVersion": "0",
+        "rootBinding": "unspecified",
+        "symbolName": "Status"
+      }
+    ],
+    "policyHash": "215a6d644aa9e36a99f30a0a2dc505d18510f572becec55359f8d0ccd986b854",
+    "policyId": "fixture.source",
+    "tokens": []
+  },
+  "provenanceHash": "4ed53b2fbc66b14aca0013e5548e7e29e5d6747ad5ad23c282c681b18549be7c",
+  "semantic": {
+    "components": [
+      {
+        "modelName": "Status",
+        "schema": {
+          "$id": "https://design-lock.local/schemas/fixture/Status",
+          "additionalProperties": false,
+          "properties": {
+            "component": {
+              "const": "Status"
+            },
+            "tone": {
+              "enum": [
+                "info",
+                "success"
+              ],
+              "type": "string",
+              "x-design-lock-authority": "derived"
+            }
+          },
+          "required": [
+            "component",
+            "tone"
+          ],
+          "type": "object",
+          "x-design-lock-authority": "closed-contract"
+        }
+      }
+    ],
+    "id": "fixture.source",
+    "tokenKeys": []
+  },
+  "semanticHash": "1c2afbd43d78d1e446f9656459012a0feb6600c9cce5557bf6498b269d6cca46"
+}

@@ -9,6 +9,8 @@ const ids = {
   Typography: 'https://design-lock.local/schemas/mui/Typography',
 } as const
 
+const composition = 'adapter-composition' as const
+
 const typographySchema = {
   $id: ids.Typography,
   type: 'object',
@@ -27,36 +29,7 @@ const typographySchema = {
     },
     align: { type: 'string', enum: ['left', 'center', 'right', 'justify'] },
   },
-} as const
-
-const buttonSchema = {
-  $id: ids.Button,
-  type: 'object',
-  additionalProperties: false,
-  required: ['component', 'children'],
-  properties: {
-    component: { const: 'Button' },
-    children: { type: 'string', minLength: 1, maxLength: 80 },
-    variant: { type: 'string', enum: ['contained', 'outlined', 'text'] },
-    color: { type: 'string', enum: ['primary', 'secondary', 'error', 'warning', 'info', 'success'] },
-    size: { type: 'string', enum: ['small', 'medium', 'large'] },
-    disabled: { type: 'boolean' },
-    href: { type: 'string', maxLength: 300 },
-  },
-} as const
-
-const chipSchema = {
-  $id: ids.Chip,
-  type: 'object',
-  additionalProperties: false,
-  required: ['component', 'label'],
-  properties: {
-    component: { const: 'Chip' },
-    label: { type: 'string', minLength: 1, maxLength: 60 },
-    variant: { type: 'string', enum: ['filled', 'outlined'] },
-    color: { type: 'string', enum: ['default', 'primary', 'secondary', 'error', 'warning', 'info', 'success'] },
-    size: { type: 'string', enum: ['small', 'medium'] },
-  },
+  'x-design-lock-authority': composition,
 } as const
 
 const cardHeaderSchema = {
@@ -69,6 +42,7 @@ const cardHeaderSchema = {
     title: { type: 'string', minLength: 1, maxLength: 120 },
     subheader: { type: 'string', maxLength: 160 },
   },
+  'x-design-lock-authority': composition,
 } as const
 
 const cardContentSchema = {
@@ -86,6 +60,7 @@ const cardContentSchema = {
       ],
     },
   },
+  'x-design-lock-authority': composition,
 } as const
 
 const cardActionsSchema = {
@@ -97,6 +72,7 @@ const cardActionsSchema = {
     component: { const: 'CardActions' },
     children: { type: 'array', maxItems: 4, items: { $ref: ids.Button } },
   },
+  'x-design-lock-authority': composition,
 } as const
 
 const cardSchema = {
@@ -121,6 +97,7 @@ const cardSchema = {
       },
     },
   },
+  'x-design-lock-authority': composition,
 } as const
 
 const appBarSchema = {
@@ -145,16 +122,15 @@ const appBarSchema = {
       },
     },
   },
+  'x-design-lock-authority': composition,
 } as const
 
 export const muiComponentRegistry = {
   AppBar: appBarSchema,
-  Button: buttonSchema,
   Card: cardSchema,
   CardActions: cardActionsSchema,
   CardContent: cardContentSchema,
   CardHeader: cardHeaderSchema,
-  Chip: chipSchema,
   Typography: typographySchema,
 } as const
 

@@ -12,7 +12,7 @@ function validatorFor(contract: DesignSystemContract): Ajv {
   const key = contract.schemas as object
   const cached = validatorCache.get(key)
   if (cached) return cached
-  const ajv = new Ajv({ allErrors: true, strict: false, validateSchema: false })
+  const ajv = new Ajv({ allErrors: true, strict: false, validateSchema: false, verbose: true })
   contract.schemas.forEach((schema) => ajv.addSchema(schema))
   validatorCache.set(key, ajv)
   return ajv
@@ -45,6 +45,19 @@ function issueFromAjv(
       code: 'MISSING_REQUIRED',
       message: `Missing required property "${missing}"`,
       expected: missing,
+    }
+  }
+  const parent = error.parentSchema as { 'x-design-lock-role'?: unknown } | undefined
+  if (
+    (error.keyword === 'enum' || error.keyword === 'const') &&
+    parent?.['x-design-lock-role'] === 'token'
+  ) {
+    return {
+      path,
+      component,
+      code: 'INVALID_TOKEN',
+      message: error.message ?? 'Invalid token',
+      expected: params.allowedValues ?? error.schema,
     }
   }
   if (error.keyword === 'additionalProperties') {

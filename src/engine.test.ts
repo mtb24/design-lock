@@ -175,4 +175,67 @@ describe('evaluateDesignLock', () => {
       expect(result.parse.parseError).toBeTruthy()
     })
   })
+
+  it('rejects prototype-shaped keys before rendering', () => {
+    const result = evaluateDesignLock({
+      rawResponse: '{"component":"Widget","label":"Safe","constructor":{"prototype":{"polluted":true}}}',
+      mode: 'strict',
+      adapter,
+    })
+    expect(result.blocked).toBe(true)
+    expect(result.parse.tree).toBeNull()
+    expect(result.parse.parseError).toContain('Prototype-shaped key')
+    expect(result.rendered).toBeNull()
+  })
+
+  it('rejects a repaired tree that is unsafe, invalid, or oversized and keeps original findings', () => {
+    const rawResponse = '{"component":"Widget","label":"Docs","extra":true}'
+    const oversized = evaluateDesignLock({
+      rawResponse,
+      mode: 'lenient',
+      adapter: {
+        ...adapter,
+        prepareLenient: () =>
+          Array.from({ length: 3 }, () => ({ component: 'Widget', label: 'root' })),
+      },
+      limits: { maxResponseChars: 1_000, maxRoots: 2, maxDepth: 4, maxNodes: 4 },
+    })
+    const unsafe = evaluateDesignLock({
+      rawResponse,
+      mode: 'lenient',
+      adapter: {
+        ...adapter,
+        prepareLenient: () => ({ component: 'Widget', label: 'Docs', href: 'javascript:alert(1)' }),
+      },
+    })
+    expect(oversized.blocked).toBe(true)
+    expect(oversized.rendered).toBeNull()
+    expect(oversized.validation.errors.map((issue) => issue.code)).toContain('ADDITIONAL_PROP')
+    expect(oversized.repair?.accepted).toBe(false)
+    expect(oversized.repair?.limitError).toContain('root limit')
+    expect(unsafe.blocked).toBe(true)
+    expect(unsafe.rendered).toBeNull()
+    expect(unsafe.validation.errors.map((issue) => issue.code)).toContain('ADDITIONAL_PROP')
+    expect(unsafe.repair?.validation.errors.map((issue) => issue.code)).toContain('UNSAFE_URL')
+  })
+
+  it('reports an invalid token without rendering it', () => {
+    const tokenSchema = {
+      ...widget,
+      $id: 'test/Token',
+      properties: {
+        ...widget.properties,
+        color: { type: 'string', enum: ['primary'], 'x-design-lock-role': 'token' },
+      },
+    }
+    const tokenAdapter = { ...adapter, registry: { Widget: tokenSchema }, schemas: [tokenSchema] }
+    const result = evaluateDesignLock({
+      rawResponse: '{"component":"Widget","label":"Docs","color":"neon"}',
+      mode: 'strict',
+      adapter: tokenAdapter,
+    })
+    expect(result.blocked).toBe(true)
+    expect(result.rendered).toBeNull()
+    expect(result.validation.errors.map((issue) => issue.code)).toContain('INVALID_TOKEN')
+  })
 })

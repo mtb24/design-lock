@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "@carbon/react": "^1.113.0",
+    "@carbon/styles": "1.112.0",
     "@design-lock/core": "file:../..",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",

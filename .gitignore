@@ -4,3 +4,8 @@ dist/
 .DS_Store
 .env
 coverage/
+.output/
+storybook-static/
+debug-storybook.log
+.designlock-extract.tsx
+.trusted-verifier-*/
